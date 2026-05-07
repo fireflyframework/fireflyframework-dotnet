@@ -14,10 +14,26 @@ public sealed class CognitoIdpAdapter : IIdpAdapter
     private readonly IAmazonCognitoIdentityProvider _client;
     private readonly CognitoOptions _opt;
 
+    /// <summary>
+    /// Production constructor. Builds a default <see cref="AmazonCognitoIdentityProviderClient"/>
+    /// for the configured region. Pick this overload when registering through DI.
+    /// </summary>
     public CognitoIdpAdapter(IOptions<CognitoOptions> options)
+        : this(options, new AmazonCognitoIdentityProviderClient(RegionEndpoint.GetBySystemName(options.Value.Region)))
     {
+    }
+
+    /// <summary>
+    /// Constructor that accepts an explicit <see cref="IAmazonCognitoIdentityProvider"/>.
+    /// Used by tests with a mocked client and by hosts that share a single Cognito client
+    /// across adapters or wire custom credentials providers / retry policies.
+    /// </summary>
+    public CognitoIdpAdapter(IOptions<CognitoOptions> options, IAmazonCognitoIdentityProvider client)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(client);
         _opt = options.Value;
-        _client = new AmazonCognitoIdentityProviderClient(RegionEndpoint.GetBySystemName(_opt.Region));
+        _client = client;
     }
 
     private string? SecretHash(string username) => _opt.ClientSecret is null
