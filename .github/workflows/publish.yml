@@ -1,0 +1,134 @@
+name: publish
+
+# Publishes every src/* project as a NuGet package to:
+#   - NuGet.org (https://www.nuget.org/packages?q=FireflyFramework) — requires NUGET_API_KEY secret
+#   - GitHub Packages (uses the workflow's GITHUB_TOKEN — no extra secret needed)
+#
+# Triggers:
+#   - GitHub Release published (tag = `v26.04.01` → package version = `26.04.01`)
+#   - Manual workflow_dispatch with an explicit version (escape hatch / pre-release pushes)
+#
+# Sample projects (samples/*) and the test project carry <IsPackable>false</IsPackable>,
+# so `dotnet pack` on the solution produces only the consumer-facing src/* packages.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g. 26.04.01). Overrides Directory.Build.props.'
+        required: true
+      publish-nuget:
+        description: 'Push to NuGet.org (requires NUGET_API_KEY secret)'
+        required: false
+        default: true
+        type: boolean
+      publish-github:
+        description: 'Push to GitHub Packages (uses GITHUB_TOKEN)'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write   # needed by softprops/action-gh-release to attach .nupkg to the release
+  packages: write   # needed to push to GitHub Packages
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve package version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            tag="${{ github.event.release.tag_name }}"
+            version="${tag#v}"
+          else
+            version="${{ inputs.version }}"
+          fi
+          if [[ -z "$version" ]]; then
+            echo "::error::Could not resolve package version (release tag empty and no manual input)."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Resolved package version: $version"
+
+      - name: Restore
+        run: dotnet restore FireflyFramework.sln
+
+      - name: Build
+        run: dotnet build FireflyFramework.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test FireflyFramework.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ steps.version.outputs.version }}
+          path: '**/test-results.trx'
+
+      - name: Pack
+        run: |
+          dotnet pack FireflyFramework.sln \
+            --configuration Release \
+            --no-build \
+            --output ./packages \
+            -p:PackageVersion=${{ steps.version.outputs.version }} \
+            -p:Version=${{ steps.version.outputs.version }} \
+            -p:ContinuousIntegrationBuild=true
+
+      - name: List packed artifacts
+        run: ls -lh ./packages
+
+      - name: Upload nupkg + snupkg artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkgs-${{ steps.version.outputs.version }}
+          path: |
+            ./packages/*.nupkg
+            ./packages/*.snupkg
+
+      - name: Push to NuGet.org
+        if: ${{ github.event_name == 'release' || inputs.publish-nuget == true }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        shell: bash
+        run: |
+          if [[ -z "$NUGET_API_KEY" ]]; then
+            echo "::warning::NUGET_API_KEY secret is not configured — skipping NuGet.org push."
+            exit 0
+          fi
+          dotnet nuget push './packages/*.nupkg' \
+            --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
+
+      - name: Push to GitHub Packages
+        if: ${{ github.event_name == 'release' || inputs.publish-github == true }}
+        run: |
+          dotnet nuget push './packages/*.nupkg' \
+            --api-key "${{ secrets.GITHUB_TOKEN }}" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --skip-duplicate
+
+      - name: Attach packages to GitHub Release
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./packages/*.nupkg
+            ./packages/*.snupkg
+          fail_on_unmatched_files: true

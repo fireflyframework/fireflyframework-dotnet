@@ -229,6 +229,141 @@ walkthrough.
 
 ---
 
+## Build your first Firefly service
+
+Once you've seen the sample running, here is the end-to-end recipe for
+a brand-new service. The result is a runnable ASP.NET Core 10 host that
+emits the Firefly startup banner, serves RFC 7807 problem responses,
+honours `X-Idempotency-Key`, and dispatches commands through the CQRS
+bus — all from a single project, in roughly forty lines of code.
+
+### Prerequisites
+
+* **.NET 10 SDK** — verify with `dotnet --version` (any `10.0.*` is fine).
+* `curl`, or any HTTP client, for the smoke test.
+
+### 1. Create the project
+
+```bash
+dotnet new webapi -n HelloFirefly -o HelloFirefly
+cd HelloFirefly
+rm WeatherForecast.cs                      # the template noise we don't need
+```
+
+### 2. Install the framework
+
+The Firefly packages live on NuGet under the `FireflyFramework.*`
+prefix. The starter meta-package wires the entire infrastructure tier
+(Web, Cache, Observability, EDA, CQRS) in one call, so you only need
+this single `add package` to start:
+
+```bash
+dotnet add package FireflyFramework.Starter.Core
+```
+
+If you want the rule engine, orchestration, or one of the IDP
+adapters, add the corresponding `FireflyFramework.<Module>` package on
+top (every `src/<Module>/README.md` describes its own surface).
+
+> **Note** — the published versions track the Java release line as a
+> calendar version (currently `26.04.01`). The CI/release workflow
+> (`.github/workflows/publish.yml`) pushes every `src/*` project to
+> NuGet.org and GitHub Packages on each tagged release; see
+> [`Releases & publishing`](#releases--publishing) below.
+
+### 3. Replace `Program.cs`
+
+```csharp
+using FireflyFramework.Cqrs.Buses;
+using FireflyFramework.Cqrs.Commands;
+using FireflyFramework.Starter.Core;
+using FireflyFramework.Web.DependencyInjection;
+using ExecutionContext = FireflyFramework.Cqrs.Context.ExecutionContext;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// One-line wiring of the Firefly infrastructure tier.
+builder.Services.AddFireflyCore(
+    builder.Configuration,
+    serviceName: "hello-firefly",
+    serviceVersion: "1.0.0",
+    cqrsAssemblies: new[] { typeof(Program).Assembly });
+
+var app = builder.Build();
+
+// RFC 7807 errors, correlation IDs, idempotency, PII masking — all on by default.
+app.UseFireflyWeb();
+
+app.MapPost("/api/v1/greet", async (GreetRequest request, ICommandBus bus, CancellationToken ct) =>
+{
+    var ctx = new ExecutionContext { UserId = "anonymous" };
+    var greeting = await bus.SendAsync(new GreetCommand(request.Name), ctx, ct);
+    return Results.Ok(new { greeting });
+});
+
+app.Run();
+
+public sealed record GreetRequest(string Name);
+public sealed record GreetCommand(string Name) : ICommand<string>;
+
+public sealed class GreetHandler : ICommandHandler<GreetCommand, string>
+{
+    public Task<string> HandleAsync(GreetCommand cmd, ExecutionContext ctx, CancellationToken ct) =>
+        Task.FromResult($"Hello, {cmd.Name}!");
+}
+
+public partial class Program;
+```
+
+### 4. Configure the framework (`appsettings.json`)
+
+```jsonc
+{
+  "Firefly": {
+    "Web":   { "Idempotency": { "Enabled": true, "HeaderName": "X-Idempotency-Key" } },
+    "Cache": { "Provider": "Memory" }
+  }
+}
+```
+
+The full schema for every `Firefly:*` section lives in
+[`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
+
+### 5. Run it
+
+```bash
+dotnet run
+```
+
+You should see the Firefly ASCII banner, the resolved application name
+(`hello-firefly@1.0.0`), and the Kestrel hosting line.
+
+### 6. Smoke-test
+
+```bash
+curl -X POST http://localhost:5000/api/v1/greet \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: demo-1' \
+  -d '{"name":"Ada"}'
+# → 200 OK  { "greeting": "Hello, Ada!" }
+
+# Replay with the same idempotency key — the cached response is returned
+# without invoking the handler again.
+curl -X POST http://localhost:5000/api/v1/greet \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: demo-1' \
+  -d '{"name":"Ada"}'
+# → 200 OK  (identical body, handler not re-run)
+```
+
+That's it. From here, the natural next steps are:
+
+1. **Add a query** with `IQuery<TResult>` + `IQueryHandler<>` and dispatch via `IQueryBus.AskAsync`.
+2. **Promote to the canonical 5-project layout** by copying the structure of [`samples/FireflyFramework.Samples.OrdersService.*`](samples/) — see [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md).
+3. **Pick a richer starter** — `Starter.Application` (adds plugins / orchestration / IDP), `Starter.Domain` (adds event sourcing), or `Starter.Data` (you supply the `DbContext`).
+
+---
+
 ## Configuration
 
 Every option binds under the `Firefly:*` namespace in `appsettings.json`,
@@ -307,6 +442,61 @@ running version *X* on either platform consumes identical contracts.
 `Directory.Packages.props` pins every NuGet to a known-good version.
 Transitive package floats are not allowed — when an upstream forces a
 newer version, the central pin is bumped explicitly.
+
+---
+
+## Releases & publishing
+
+Every `src/*` project is a publishable NuGet package
+(`<IsPackable>true</IsPackable>` is the Directory.Build.props default;
+samples and tests opt out individually).
+
+### Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every
+pull request and every push to `main`:
+
+1. Restore + build the whole solution in **Release** configuration.
+2. Run the test suite (`dotnet test`).
+3. On `main` only, pack every `src/*` project and upload the resulting
+   `.nupkg` files as a workflow artifact (preview only — *not* pushed
+   to a registry).
+
+### Releasing a version
+
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml)
+fires on a published GitHub Release **or** by manual
+`workflow_dispatch`. It rebuilds, re-tests, packs every `src/*`
+project at the resolved version, and pushes to:
+
+| Target          | Authentication                                     |
+|-----------------|----------------------------------------------------|
+| **NuGet.org**         | repo secret `NUGET_API_KEY` (skipped with a warning if unset) |
+| **GitHub Packages**   | the workflow's `GITHUB_TOKEN` (always present)            |
+| **GitHub Release**    | `.nupkg` + `.snupkg` attached as release assets           |
+
+To cut a release:
+
+```bash
+# 1. Bump <Version> in Directory.Build.props.
+# 2. Commit, tag, push.
+git tag v26.04.01
+git push origin v26.04.01
+
+# 3. Publish a GitHub Release on the tag — the workflow takes over.
+gh release create v26.04.01 --generate-notes
+```
+
+The `v` prefix is stripped before the version is fed to `dotnet pack`,
+so a tag of `v26.04.01` produces packages versioned `26.04.01`. For
+hotfixes or pre-release cuts, run the workflow manually:
+
+```bash
+gh workflow run publish.yml -f version=26.04.01-rc.1
+```
+
+Both targets use `--skip-duplicate`, so re-running the workflow on the
+same version is safe.
 
 ---
 
