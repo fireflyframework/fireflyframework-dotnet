@@ -3,7 +3,7 @@
 **Source:** `org.fireflyframework:*:26.04.01` (Spring Boot 3.5.10 / Spring Cloud 2025.0.1 / Java 25)
 **Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (LTS, C# 14)
 **Scope:** every Java module under `/Users/ancongui/Development/fireflyframework/fireflyframework-*` excluding `firefly-frontend-framework`, `flyfront`, `pyfly`, `fireflyframework-genai`, `fireflyframework-cli`, `fireflyframework-claude-skills*`, `secrets-vault`, `fireflyframework-agentic*`.
-**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**, and the test project ships **248 passing tests** that exercise every concrete adapter the framework ships against the real protocol it speaks (HTTP request shape via WireMock, SDK request shape via NSubstitute).
+**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**, and the test project ships **304 passing tests** that exercise every concrete adapter the framework ships against the real protocol it speaks (HTTP request shape via WireMock, SDK request shape via NSubstitute) plus the bundled client / orchestration extras.
 
 ---
 
@@ -147,7 +147,7 @@ fireflyframework-dotnet/
 │   ├── FireflyFramework.Starter.{Core,Application,Domain,Data}
 │   └── FireflyFramework.BackOffice
 └── tests/
-    └── FireflyFramework.Tests/        # 248 tests across the framework — 248/248 passing
+    └── FireflyFramework.Tests/        # 304 tests across the framework — 304/304 passing
 ```
 
 ---
@@ -210,7 +210,25 @@ The test project pins both **framework internals** (kernel, validators, web, cac
 | `FcmPushProvider` | 4 | NSubstitute on new `IFirebaseMessenger` seam | `Message` shape (token / notification / data), null-data fallback, exception handling |
 | `EcmAdapterFramework` | 9 | Behavioural | `AdapterIntrospection`, `AdapterRegistry` register / resolve / filter-by-feature, `AdapterSelector` priority + explicit pick, `NoOpAdapter` content round-trip |
 
-| **Total** | **248 / 248 passed** | |
+#### Client + orchestration extras — 56 tests
+
+The bundled extras ported in PR #12 + #13 (service discovery, load balancing, OAuth2 token caching, request deduplication, metrics, chaos engineering, health rollup, recovery, topology rendering, workflow query, search projection, REST control plane) each carry behaviour-pinning tests:
+
+| Component | Tests | Approach |
+|---|---|---|
+| `StaticServiceDiscoveryClient` | 7 | Behavioural |
+| `ILoadBalancerStrategy` (6 strategies) | 8 | Behavioural |
+| `OAuth2TokenCache` | 4 | WireMock token endpoint |
+| `RequestDeduplicator` | 5 | Behavioural; concurrent dedupe assertion |
+| `ServiceClientMetrics` | 2 | `MeterListener` capture |
+| `ChaosEngineeringHandler` | 5 | `DelegatingHandler` pipeline; probabilities pinned to 1.0 |
+| `ServiceClientHealthManager` | 4 | Behavioural state-transition rollup |
+| `RecoveryService` | 4 | Behavioural |
+| `TopologyBuilder` + `TopologyGraphGenerator` | 6 | Behavioural; cycle detection; DOT / Mermaid / PlantUML |
+| `WorkflowQueryService` | 6 | Behavioural |
+| `SearchAttributeProjection` | 5 | Behavioural |
+
+| **Total** | **304 / 304 passed** | |
 
 Build: `dotnet build FireflyFramework.sln` reports **0 errors / 0 warnings**, with all NU1903 advisories pinned out (`System.Linq.Dynamic.Core` 1.7.2, `System.Security.Cryptography.Xml` 10.0.7, `Microsoft.Kiota.Abstractions` 2.0.0).
 
@@ -233,8 +251,8 @@ The framework is consumable today. Every concrete adapter the framework ships ha
 - **Rule engine Python codegen** — Java offers an alternative execution backend that compiles YAML DSL rules to Python (1789 LoC compiler + a Python `firefly_runtime` library of helpers). The .NET visitor evaluator runs rules natively in-process; `IronPython` is pinned in CPM for a future port. Effort: ~3 days for the codegen, plus 1–2 days to bind the runtime helpers (datetime / financial / HMAC / validation) for IronPython.
 - **Hot-reload plugin loading** — `McMaster.NETCore.Plugins` is pinned; current `DefaultPluginManager` uses `Activator.CreateInstance`, which is sufficient for in-process plugins but not for hot-reload from external assemblies. Effort: ~½ day.
 - **Webhook HMAC validators** — the SPI is in place (`IWebhookSignatureValidator`); per-provider HMAC schemes (Stripe, Twilio, GitHub) are left to consumer applications.
-- **Orchestration extras** — Java's `fireflyframework-orchestration` ships a built-in REST control plane, scheduling integration, topology visualisation, and an automatic recovery service for orphaned executions. The .NET port covers the production execution backbone (Saga, TCC, Workflow, Compensation, Persistence, DLQ); the supporting tooling above is intentionally deferred.
-- **Client extras** — Java's `fireflyframework-client` bundles helpers for service discovery (Eureka / Consul / Kubernetes), load balancing, OAuth2 token caching, GraphQL, webhook delivery, chaos engineering, and request deduplication. The .NET port wires the four core transports (REST, gRPC, SOAP, WebSockets) with full Polly v8 resilience pipelines; the rest are deliberately left to consumer applications, since `Microsoft.Extensions.ServiceDiscovery` (already pinned) and YARP cover most of the same surface.
+- ~~**Orchestration extras**~~ — ported in PR #12 + #13. `Recovery/RecoveryService`, `Topology/TopologyBuilder` + `TopologyGraphGenerator` (Graphviz / Mermaid / PlantUML output), `Workflow/WorkflowQueryService`, `Workflow/SearchAttributeProjection`, `Web/OrchestrationController`, `Web/DeadLetterController`. The remaining gaps versus Java are scheduling integration (cron-triggered sagas — needs a Quartz.NET-style component) and the workflow-lifecycle controller (start/cancel/suspend/resume — requires API extensions to `WorkflowEngine` first).
+- ~~**Client extras**~~ — ported in PR #12 + #13. `Discovery/IServiceDiscoveryClient` + `StaticServiceDiscoveryClient`, six `LoadBalancer/ILoadBalancerStrategy` implementations, `OAuth2/OAuth2TokenCache`, `Deduplication/RequestDeduplicator`, `Metrics/ServiceClientMetrics`, `Chaos/ChaosEngineeringHandler` + `FaultInjectionConfig`, `Health/ServiceClientHealthManager`. Eureka / Consul / Kubernetes service-discovery clients and the GraphQL helper remain deferred — `Microsoft.Extensions.ServiceDiscovery` (already pinned) and `HotChocolate.AspNetCore` (already pinned) cover most of the same surface for consumer applications.
 
 ### 6.2 Resolved since prior revisions
 
