@@ -35,8 +35,15 @@ public sealed class AzureAdIdpAdapter : IIdpAdapter
 
     public async Task<TokenResponse> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
+        // Microsoft is deprecating ROPC (username/password) for security reasons:
+        // https://aka.ms/msal-ropc-migration. We keep this entry point because the
+        // IIdpAdapter contract (shared with the Java side) exposes a username/password
+        // login method. New services should prefer the device-code, authorization-code,
+        // or client-credentials flow exposed by IConfidentialClientApplication.
+#pragma warning disable CS0618
         var result = await _public.AcquireTokenByUsernamePassword(_opt.Scopes, request.Username, request.Password)
             .ExecuteAsync(ct).ConfigureAwait(false);
+#pragma warning restore CS0618
         return new TokenResponse(result.AccessToken, null, "Bearer",
             (int)(result.ExpiresOn - DateTimeOffset.UtcNow).TotalSeconds, string.Join(' ', result.Scopes), result.IdToken);
     }
