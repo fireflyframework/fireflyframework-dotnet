@@ -19,5 +19,6 @@
   <ItemGroup>
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.Core" />
+    <PackageReference Include="Cronos" />
   </ItemGroup>
 </Project>
