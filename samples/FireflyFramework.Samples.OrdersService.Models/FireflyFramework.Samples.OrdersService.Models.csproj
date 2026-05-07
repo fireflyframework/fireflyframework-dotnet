@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Samples.OrdersService.Models</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Description>Persistence entities and repository contracts for the Orders sample. Mirrors core-banking-accounts-models.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Samples.OrdersService.Interfaces/FireflyFramework.Samples.OrdersService.Interfaces.csproj" />
+  </ItemGroup>
+</Project>

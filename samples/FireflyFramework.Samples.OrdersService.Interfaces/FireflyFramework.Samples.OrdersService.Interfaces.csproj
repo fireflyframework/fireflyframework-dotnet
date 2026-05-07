@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Samples.OrdersService.Interfaces</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Description>Public DTOs and enums for the Orders sample. Mirrors core-banking-accounts-interfaces.</Description>
+  </PropertyGroup>
+</Project>

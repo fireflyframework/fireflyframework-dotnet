@@ -98,8 +98,9 @@ to the Spring Boot starters. They guarantee the canonical set of versions.
 ### 2.5 Tests / Samples (`05-Tests/`, `06-Samples/`)
 
 * `FireflyFramework.Tests` — xUnit suite covering 100% of platform tiers.
-* `FireflyFramework.Samples.OrdersService` — minimal API + EF Core +
-  EDA + EventSourcing showcase.
+* `FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`
+  — five-project reference service showing the canonical scaffolding.
+  See [SERVICE-SCAFFOLDING.md](SERVICE-SCAFFOLDING.md).
 
 ## 3. Cross-cutting concerns
 

@@ -38,7 +38,7 @@ dotnet --version               # expect 9.0.x
 ```bash
 dotnet build  FireflyFramework.sln                                 # 0 errors
 dotnet test   tests/FireflyFramework.Tests/                        # 157 passing
-dotnet run --project samples/FireflyFramework.Samples.OrdersService/
+dotnet run --project samples/FireflyFramework.Samples.OrdersService.Web/
 ```
 
 ## Repository layout
@@ -47,18 +47,23 @@ dotnet run --project samples/FireflyFramework.Samples.OrdersService/
 fireflyframework-dotnet/
 ├── docs/                              Long-form documentation
 │   ├── ARCHITECTURE.md                Tier diagram, dependency graph
+│   ├── SERVICE-SCAFFOLDING.md         Canonical 5-project service layout
 │   ├── MIGRATION-GUIDE.md             Java to .NET cookbook
 │   ├── CONFIGURATION.md               Every Firefly:* options section
 │   ├── MODULES.md                     One-line description per project
 │   └── AUDIT.md                       Java vs .NET feature parity audit
 ├── src/                               52 framework projects
-├── tests/FireflyFramework.Tests/      xUnit suite
-├── samples/                           Runnable reference services
-│   └── FireflyFramework.Samples.OrdersService/
+├── tests/FireflyFramework.Tests/      xUnit suite (157 tests)
+├── samples/                           Reference services in canonical 5-project layout
+│   ├── FireflyFramework.Samples.OrdersService.Interfaces/    DTOs / enums
+│   ├── FireflyFramework.Samples.OrdersService.Models/        Entities + repository
+│   ├── FireflyFramework.Samples.OrdersService.Core/          Commands / queries / handlers
+│   ├── FireflyFramework.Samples.OrdersService.Web/           Runnable host
+│   └── FireflyFramework.Samples.OrdersService.Sdk/           Typed HttpClient
 ├── Directory.Build.props              Parent build properties
 ├── Directory.Build.targets            Test-project package wiring
 ├── Directory.Packages.props           Central Package Management
-├── FireflyFramework.sln               Solution file (53 projects, 7 folders)
+├── FireflyFramework.sln               Solution file (57 projects, 7 folders)
 ├── NuGet.config                       Pins nuget.org as the only source
 ├── global.json                        Pins .NET SDK 9.0
 ├── .envrc                             Sources dotnet@9 into PATH
@@ -121,11 +126,27 @@ fireflyframework-dotnet/
 
 ## A complete service end-to-end
 
-The runnable example at `samples/FireflyFramework.Samples.OrdersService/Program.cs`
-demonstrates the recommended composition. The shape is:
+Every Firefly service follows the same five-project scaffolding (mirroring
+the multi-module Maven layout used by Java services in the platform):
+
+| Project        | Responsibility                                                         |
+|----------------|------------------------------------------------------------------------|
+| `.Interfaces`  | Public DTOs and enums — the wire contract                              |
+| `.Models`      | Persistence entities + repository contracts                            |
+| `.Core`        | Commands, queries, handlers, mappers, business services                |
+| `.Web`         | Runnable ASP.NET Core 9 host                                           |
+| `.Sdk`         | Typed `HttpClient` for in-process callers                              |
+
+See [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) for the
+template, naming conventions, dependency graph, and rationale. The
+runnable reference is at `samples/FireflyFramework.Samples.OrdersService.*`;
+its `.Web/Program.cs` is:
 
 ```csharp
 using FireflyFramework.Cqrs.Buses;
+using FireflyFramework.Samples.OrdersService.Core.Services.Orders.V1;
+using FireflyFramework.Samples.OrdersService.Interfaces.Dtos.V1;
+using FireflyFramework.Samples.OrdersService.Models.Repositories;
 using FireflyFramework.Starter.Core;
 using FireflyFramework.Web.DependencyInjection;
 using ExecutionContext = FireflyFramework.Cqrs.Context.ExecutionContext;
@@ -136,16 +157,18 @@ builder.Services.AddFireflyCore(
     builder.Configuration,
     serviceName:    "orders-service",
     serviceVersion: "1.0.0",
-    cqrsAssemblies: new[] { typeof(Program).Assembly });
+    cqrsAssemblies: new[] { typeof(PlaceOrderCommand).Assembly });
+
+builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
 
 var app = builder.Build();
 app.UseFireflyWeb();   // adds GlobalExceptionHandlerMiddleware + IdempotencyMiddleware
 
-app.MapPost("/api/orders", async (PlaceOrderRequest req, ICommandBus bus, CancellationToken ct) =>
+app.MapPost("/api/v1/orders", async (PlaceOrderRequest req, ICommandBus bus, CancellationToken ct) =>
 {
     var ctx = new ExecutionContext { UserId = "demo-user", TenantId = "demo-tenant" };
     var orderId = await bus.SendAsync(new PlaceOrderCommand(req.Sku, req.Quantity, req.UnitPrice), ctx, ct);
-    return Results.Created($"/api/orders/{orderId}", new { orderId });
+    return Results.Created($"/api/v1/orders/{orderId}", new { orderId });
 });
 
 await app.RunAsync();

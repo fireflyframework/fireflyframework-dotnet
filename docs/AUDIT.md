@@ -53,7 +53,7 @@
 | **fireflyframework-starter-data** | `FireflyFramework.Starter.Data` | Full | Adds full Polly resilience suite. |
 | **fireflyframework-backoffice** | `FireflyFramework.BackOffice` | Full | Wraps `Starter.Application` for back-office services. |
 
-**Coverage:** 39 of 39 in-scope Java modules → 52 .NET projects (multi-module Java projects expand to one project per sub-module). Plus a `tests/FireflyFramework.Tests` project (61 tests) and a `samples/FireflyFramework.Samples.OrdersService` runnable microservice.
+**Coverage:** 39 of 39 in-scope Java modules → 52 .NET projects (multi-module Java projects expand to one project per sub-module). Plus a `tests/FireflyFramework.Tests` project (157 tests) and a five-project reference service `samples/FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`.
 
 ---
 
