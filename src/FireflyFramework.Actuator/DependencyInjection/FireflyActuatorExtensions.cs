@@ -27,7 +27,7 @@ public static class FireflyActuatorExtensions
             d.ImplementationType?.FullName,
             d.Lifetime.ToString(),
             d.IsKeyedService)).ToList();
-        services.AddSingleton(snapshot);
+        services.AddSingleton<IReadOnlyList<BeansEndpoint.BeanRegistration>>(snapshot);
 
         services.AddSingleton<IActuatorEndpoint, InfoEndpoint>();
         services.AddSingleton<IActuatorEndpoint, EnvEndpoint>();

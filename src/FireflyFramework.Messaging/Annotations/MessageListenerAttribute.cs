@@ -8,19 +8,17 @@
 
 namespace FireflyFramework.Messaging.Annotations;
 
-/// <summary>Subscribes a method to a destination on the in-process broker.</summary>
+/// <summary>
+/// Subscribes a method to a destination on the in-process broker. The attribute is
+/// a documentation marker — applications wire subscriber discovery on top of
+/// <see cref="Core.IMessageBroker.Subscribe{T}"/>; this type is reserved here so
+/// future framework-side scanners pick it up exactly the same way Spring's
+/// <c>@MessageListener</c> does.
+/// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public sealed class MessageListenerAttribute : Attribute
 {
     public MessageListenerAttribute(string destination) { Destination = destination; }
     public string Destination { get; }
     public string? Selector { get; init; }
-}
-
-/// <summary>Marks a method that maps an incoming destination to an outbound reply.</summary>
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-public sealed class SendToAttribute : Attribute
-{
-    public SendToAttribute(string destination) { Destination = destination; }
-    public string Destination { get; }
 }

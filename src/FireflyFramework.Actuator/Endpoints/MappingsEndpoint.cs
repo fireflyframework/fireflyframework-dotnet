@@ -14,13 +14,25 @@ namespace FireflyFramework.Actuator.Endpoints;
 
 public sealed class MappingsEndpoint : IActuatorEndpoint
 {
-    private readonly EndpointDataSource _dataSource;
-    public MappingsEndpoint(EndpointDataSource dataSource) { _dataSource = dataSource; }
+    private readonly EndpointDataSource? _dataSource;
+
+    /// <summary>
+    /// <paramref name="dataSource"/> is optional: outside an ASP.NET Core host
+    /// (test rigs, console hosts, hosted services without routing) the actuator
+    /// still loads, and this endpoint reports "routing not available" instead of
+    /// failing the entire registration graph.
+    /// </summary>
+    public MappingsEndpoint(EndpointDataSource? dataSource = null) { _dataSource = dataSource; }
 
     public string Id => "mappings";
 
     public Task<object?> InvokeAsync(IDictionary<string, string?> parameters, CancellationToken ct)
     {
+        if (_dataSource is null)
+        {
+            return Task.FromResult<object?>(new { contexts = new { application = new { endpoints = Array.Empty<object>(), note = "routing not available" } } });
+        }
+
         var endpoints = _dataSource.Endpoints.OfType<RouteEndpoint>().Select(e => new
         {
             displayName = e.DisplayName,
