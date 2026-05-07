@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Kernel</RootNamespace>
+    <PackageId>FireflyFramework.Kernel</PackageId>
+    <Description>Foundational layer of the Firefly Framework. Provides the unified exception hierarchy and shared abstractions that every other module depends on. Equivalent to fireflyframework-kernel.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>
