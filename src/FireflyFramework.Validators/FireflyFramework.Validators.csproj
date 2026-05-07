@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Validators</RootNamespace>
+    <PackageId>FireflyFramework.Validators</PackageId>
+    <Description>Validation attributes and FluentValidation rules covering financial and domain-specific values: IBAN, BIC, credit card (Luhn), CVV, currency, phone, tax id, password strength, etc. Equivalent to fireflyframework-validators.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+</Project>
