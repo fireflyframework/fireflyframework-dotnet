@@ -1,0 +1,16 @@
+${AnsiColor.RED}
+  _____.__                _____.__
+_/ ____\__|______   _____/ ____\  | ___.__.
+\   __\|  \_  __ \_/ __ \   __\|  |<   |  |
+ |  |  |  ||  | \/\  ___/|  |  |  |_\___  |
+ |__|  |__||__|    \___  >__|  |____/ ____|
+                       \/           \/
+${AnsiColor.RED}${AnsiStyle.BOLD}:: firefly-application ::        (v${application.version:unknown})${AnsiColor.DEFAULT}${AnsiStyle.NORMAL}
+
+${AnsiColor.GREEN}${AnsiStyle.BOLD}(c)2026 Firefly Software Foundation${AnsiColor.DEFAULT}${AnsiStyle.NORMAL}
+${AnsiColor.GREEN}${AnsiStyle.BOLD}Licensed under Apache 2.0${AnsiColor.DEFAULT}${AnsiStyle.NORMAL}
+
+${AnsiStyle.BOLD}.NET Runtime:${AnsiStyle.NORMAL} ${dotnet.version}
+${AnsiStyle.BOLD}Application:${AnsiStyle.NORMAL} ${application.name:Unknown}
+${AnsiStyle.BOLD}Application Version:${AnsiStyle.NORMAL} ${application.version:Unknown}
+${AnsiColor.YELLOW}${AnsiStyle.BOLD}⇩⇩⇩ Logs start below ⇩⇩⇩${AnsiStyle.NORMAL}${AnsiColor.DEFAULT}

@@ -34,6 +34,10 @@
     <ProjectReference Include="../../src/FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Callbacks.Models/FireflyFramework.Callbacks.Models.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Starter.Core/FireflyFramework.Starter.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Starter.Application/FireflyFramework.Starter.Application.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Starter.Domain/FireflyFramework.Starter.Domain.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Starter.Data/FireflyFramework.Starter.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

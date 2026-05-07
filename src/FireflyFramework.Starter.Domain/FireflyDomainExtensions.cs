@@ -1,5 +1,6 @@
 using FireflyFramework.EventSourcing.Store;
 using FireflyFramework.Starter.Core;
+using FireflyFramework.Web.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,6 +22,7 @@ public static class FireflyDomainExtensions
         string serviceVersion = "1.0.0",
         params System.Reflection.Assembly[] cqrsAssemblies)
     {
+        FireflyBanner.Print(typeof(FireflyDomainExtensions).Assembly, serviceName, serviceVersion);
         services.AddFireflyCore(config, serviceName, serviceVersion, cqrsAssemblies);
         services.TryAddSingleton<IEventStore, InMemoryEventStore>();
         return services;

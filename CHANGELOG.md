@@ -38,6 +38,10 @@ All notable changes to FireflyFramework.NET.
 - `Starter.Domain` (+ EventSourcing + in-memory event store)
 - `Starter.Data` (+ EF Core + Polly)
 - `BackOffice` (Application + context resolver / middleware / security context)
+- Each starter ships an embedded `Resources/banner.txt` printed once on
+  startup with ANSI colours, application name/version, and the active
+  .NET runtime — port of the Spring Boot `banner.txt` mechanism in the
+  Java starters
 
 #### Tooling
 - `Directory.Packages.props` — Central Package Management (Maven BoM analogue) pinning every NuGet

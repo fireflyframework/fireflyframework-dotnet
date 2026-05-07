@@ -1,6 +1,7 @@
 using FireflyFramework.Plugins.Api;
 using FireflyFramework.Plugins.Core;
 using FireflyFramework.Starter.Core;
+using FireflyFramework.Web.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,6 +23,7 @@ public static class FireflyApplicationExtensions
         string serviceVersion = "1.0.0",
         params System.Reflection.Assembly[] cqrsAssemblies)
     {
+        FireflyBanner.Print(typeof(FireflyApplicationExtensions).Assembly, serviceName, serviceVersion);
         services.AddFireflyCore(config, serviceName, serviceVersion, cqrsAssemblies);
         services.TryAddSingleton<IExtensionRegistry, DefaultExtensionRegistry>();
         services.TryAddSingleton<IPluginManager, DefaultPluginManager>();

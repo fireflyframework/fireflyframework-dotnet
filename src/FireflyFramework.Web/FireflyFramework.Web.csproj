@@ -20,4 +20,8 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="System.Text.Json" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FireflyFramework.Tests" />
+  </ItemGroup>
 </Project>

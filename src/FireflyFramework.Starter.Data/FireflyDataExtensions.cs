@@ -1,4 +1,5 @@
 using FireflyFramework.Starter.Core;
+using FireflyFramework.Web.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,9 @@ public static class FireflyDataExtensions
         IConfiguration config,
         string serviceName,
         string serviceVersion = "1.0.0",
-        params System.Reflection.Assembly[] cqrsAssemblies) =>
-        services.AddFireflyCore(config, serviceName, serviceVersion, cqrsAssemblies);
+        params System.Reflection.Assembly[] cqrsAssemblies)
+    {
+        FireflyBanner.Print(typeof(FireflyDataExtensions).Assembly, serviceName, serviceVersion);
+        return services.AddFireflyCore(config, serviceName, serviceVersion, cqrsAssemblies);
+    }
 }
