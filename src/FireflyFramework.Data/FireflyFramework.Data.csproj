@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Data</RootNamespace>
+    <PackageId>FireflyFramework.Data</PackageId>
+    <Description>Async data-access primitives: pagination, generic filtering DSL, base repository / entity, OpenAPI parameter customizer, multi-database support via EF Core. Mirrors fireflyframework-r2dbc.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../FireflyFramework.Utils/FireflyFramework.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+</Project>
