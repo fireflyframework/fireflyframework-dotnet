@@ -1,9 +1,9 @@
-# Firefly Framework — Java → .NET 9 Migration Audit
+# Firefly Framework — Java → .NET 10 Migration Audit
 
 **Source:** `org.fireflyframework:*:26.04.01` (Spring Boot 3.5.10 / Spring Cloud 2025.0.1 / Java 25)
-**Target:** `FireflyFramework.*` 26.04.01 on .NET 9 (`9.0.115` SDK)
+**Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (`10.0.107` SDK, C# 14)
 **Scope:** every Java module under `/Users/ancongui/Development/fireflyframework/fireflyframework-*` excluding `firefly-frontend-framework`, `flyfront`, `pyfly`, `fireflyframework-genai`, `fireflyframework-cli`, `fireflyframework-claude-skills*`, `secrets-vault`, `fireflyframework-agentic*`.
-**Result:** 52 .NET source projects + 1 test project + 1 sample microservice (53 in the solution). Solution builds cleanly with **0 errors**. **61/61 tests pass**.
+**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors**. **157/157 tests pass**.
 
 ---
 
@@ -17,7 +17,7 @@
 | **fireflyframework-utils** | `FireflyFramework.Utils` | Full | `TemplateRenderUtil` ported to Scriban + iText 7 (FreeMarker + Flying Saucer analogues). `[FilterableId]` attribute. PDF watermark / encryption hooks marked TODO inline. |
 | **fireflyframework-validators** | `FireflyFramework.Validators` | Full | All 16 Jakarta-Validation annotations re-implemented as `ValidationAttribute`s: `[ValidIban]` (ISO 7064), `[ValidBic]`, `[ValidCreditCard]` (Luhn), `[ValidCvv]`, `[ValidCurrencyCode]` (ISO 4217), `[ValidPhoneNumber]` (E.164), `[ValidAmount]`, `[ValidInterestRate]`, `[ValidDate]`, `[ValidDateTime]`, `[ValidPin]`, `[ValidSortCode]`, `[ValidAccountNumber]`, `[ValidTaxId]`, `[ValidNationalId]`, `[ValidPasswordStrength]` + `PasswordStrengthUtils`. |
 | **fireflyframework-web** | `FireflyFramework.Web` | Full | RFC 7807 `ProblemDetail` + enhanced `ErrorResponse` (timestamps, trace IDs, category, severity, retryable, rate-limit info, circuit-breaker info). 27 business exceptions covering 400/401/403/404/405/409/410/412/413/415/422/423/429/500/501/502/503/504. `IExceptionConverter` SPI + 8 default converters. `GlobalExceptionHandlerMiddleware`. `IdempotencyMiddleware` + `[DisableIdempotency]`. `PiiMaskingService`. |
-| **fireflyframework-r2dbc** | `FireflyFramework.Data` | Full | `PaginationRequest/Response`, `FilterRequest<T>`, `RangeFilter`, `GenericFilter` reflective `IQueryable<TEntity>` builder honouring `[FilterableId]`. `BaseEntity<TId>`, `IAuditableEntity`, `IVersionedEntity`, `ISoftDeleteEntity`, `ITenantScopedEntity`, `IRepository<TEntity, TId>`. EF Core 9 + Npgsql/Pomelo MySQL/SQL Server. |
+| **fireflyframework-r2dbc** | `FireflyFramework.Data` | Full | `PaginationRequest/Response`, `FilterRequest<T>`, `RangeFilter`, `GenericFilter` reflective `IQueryable<TEntity>` builder honouring `[FilterableId]`. `BaseEntity<TId>`, `IAuditableEntity`, `IVersionedEntity`, `ISoftDeleteEntity`, `ITenantScopedEntity`, `IRepository<TEntity, TId>`. EF Core 10 + Npgsql/Pomelo MySQL/SQL Server. |
 | **fireflyframework-cache** | `FireflyFramework.Cache` | Full | `ICacheAdapter` async contract, `MemoryCacheAdapter`, `RedisCacheAdapter` (StackExchange.Redis), `NoopCacheAdapter`. `FireflyCacheManager` primary + fallback. `CacheStats`, `CacheHealth`, `JsonCacheSerializer`. `ICacheSerializer` SPI. |
 | **fireflyframework-observability** | `FireflyFramework.Observability` | Full | `FireflyMetricsSupport` (System.Diagnostics.Metrics + Meter), `MetricNaming` ("firefly.{module}.{metric}"), `MetricTags` constants. `FireflyHealthCheck` base, `FireflyTracingSupport` (ActivitySource), `MdcConstants`. OpenTelemetry OTLP wiring (Prometheus + OTLP both supported). |
 | **fireflyframework-cqrs** | `FireflyFramework.Cqrs` | Full | `ICommand<R>`, `IQuery<R>`, handlers, `DefaultCommandBus`, `DefaultQueryBus` with cache, `ExecutionContext`, `ValidationResult`, `AuthorizationResult`, `[CommandHandlerComponent]`, `[QueryHandlerComponent]`, `[InvalidateCacheOn]`, `[PublishDomainEvent]`. Auto-registration via `AddFireflyCqrs(assemblies)`. |
@@ -57,13 +57,13 @@
 
 ---
 
-## 2. Technology mapping (Java → .NET 9)
+## 2. Technology mapping (Java → .NET 10)
 
-| Java / Spring concept | .NET 9 equivalent | Notes |
+| Java / Spring concept | .NET 10 equivalent | Notes |
 |---|---|---|
-| Spring Boot 3.5 | ASP.NET Core 9 | Hosted in `Microsoft.AspNetCore.App` framework reference |
+| Spring Boot 3.5 | ASP.NET Core 10 | Hosted in `Microsoft.AspNetCore.App` framework reference |
 | Spring WebFlux + Reactor | ASP.NET Core minimal/MVC + `Task<T>` / `IAsyncEnumerable<T>` | Reactor `Mono`/`Flux` collapse to .NET's idiomatic async; `IAsyncEnumerable` for streaming |
-| Spring Data R2DBC | EF Core 9 (async) + Npgsql / Pomelo | Reactive R2DBC has no exact peer — EF Core's async DbContext + IQueryable expressions provide the same ergonomics |
+| Spring Data R2DBC | EF Core 10 (async) + Npgsql / Pomelo | Reactive R2DBC has no exact peer — EF Core's async DbContext + IQueryable expressions provide the same ergonomics |
 | Flyway | DbUp + FluentMigrator (referenced) | Both DbUp and FluentMigrator pinned in `Directory.Packages.props` |
 | Spring Cache + Caffeine | `IMemoryCache` + custom `ICacheAdapter` | Caffeine ↔ Microsoft.Extensions.Caching.Memory |
 | Lettuce / Spring Redis | StackExchange.Redis | Direct mapping; same Redis protocol semantics |
@@ -104,7 +104,7 @@
 | `@Cacheable` | LazyCache / FusionCache (referenced) | FusionCache pinned in CPM for tier-aware caching |
 | Spring Boot Actuator | ASP.NET Core HealthChecks + OpenTelemetry metrics | Liveness / readiness / custom checks |
 | CycloneDX SBOM | CycloneDX (NuGet) | Pinned in CPM |
-| Native image (GraalVM) | Native AOT (.NET 9) | Compatible toolchain; not auto-enabled |
+| Native image (GraalVM) | Native AOT (.NET 10) | Compatible toolchain; not auto-enabled |
 | Testcontainers (Java) | Testcontainers .NET | Pinned for PostgreSQL / Kafka / Redis / RabbitMQ |
 | WireMock | WireMock.Net | Pinned in CPM |
 
@@ -118,7 +118,7 @@ fireflyframework-dotnet/
 ├── Directory.Packages.props           # central package management (= fireflyframework-bom)
 ├── Directory.Build.targets
 ├── FireflyFramework.sln               # 52 src + 1 tests project
-├── global.json                        # pins .NET 9 SDK
+├── global.json                        # pins .NET 10 SDK
 ├── NuGet.config
 ├── .editorconfig
 ├── docs/
@@ -155,14 +155,14 @@ fireflyframework-dotnet/
 ## 4. Build & verification
 
 ```bash
-$ source .envrc                                   # sets DOTNET_ROOT to /opt/homebrew/opt/dotnet@9
+$ source .envrc                                   # sets DOTNET_ROOT to /opt/homebrew/opt/dotnet
 $ dotnet --version
-9.0.115
+10.0.107
 $ dotnet build FireflyFramework.sln -nologo --verbosity quiet
     0 Error(s)
-    Time Elapsed 00:00:03.56
+    Time Elapsed 00:00:08.90
 $ dotnet test tests/FireflyFramework.Tests/FireflyFramework.Tests.csproj -nologo --verbosity quiet
-Passed!  - Failed: 0, Passed: 20, Skipped: 0, Total: 20, Duration: 35 ms
+Passed!  - Failed: 0, Passed: 157, Skipped: 0, Total: 157, Duration: 2 s
 ```
 
 ### Test coverage

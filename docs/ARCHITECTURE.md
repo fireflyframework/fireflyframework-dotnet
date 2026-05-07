@@ -1,7 +1,7 @@
 # Firefly Framework .NET — Architecture
 
 > Version 26.04.01 — full port of the Java/Spring Boot Firefly Framework
-> to .NET 9 with idiomatic, modern .NET technologies.
+> to .NET 10 with idiomatic, modern .NET technologies.
 
 ## 1. Overview
 
@@ -59,7 +59,7 @@ to a concrete technology (Keycloak, Azure AD, S3, Stripe, etc.).
 |---------------------------------------|---------------------------------------|----------------------------------------------|
 | `FireflyFramework.Cache`              | StackExchange.Redis + IMemoryCache    | `firefly-common-cache`                       |
 | `FireflyFramework.Observability`      | OpenTelemetry .NET                    | `firefly-otel-spring-boot-starter`           |
-| `FireflyFramework.Data`               | EF Core 9 (InMemory + Npgsql)         | `firefly-common-data` (R2DBC)                |
+| `FireflyFramework.Data`               | EF Core 10 (InMemory + Npgsql)         | `firefly-common-data` (R2DBC)                |
 | `FireflyFramework.Cqrs`               | Command/Query bus + handler discovery | `firefly-common-cqrs`                        |
 | `FireflyFramework.Eda`                | Confluent.Kafka 2.x · RabbitMQ.Client | `firefly-common-eda`                         |
 | `FireflyFramework.EventSourcing`      | Aggregates, snapshots, projections, outbox, upcasters | `firefly-event-sourcing-spring-boot-starter` |
@@ -163,7 +163,7 @@ Web ────────┤── Cache ──┐
 A typical deployable assembled with the Firefly starters is:
 
 ```
-                ┌──── ASP.NET Core 9 host ────┐
+                ┌──── ASP.NET Core 10 host ────┐
                 │                             │
    Inbound ───▶│  Web (Problem+JSON, JWT,   │──▶ Domain (CQRS handlers)
    HTTP/gRPC   │   correlation-id)           │       │

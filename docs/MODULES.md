@@ -19,7 +19,7 @@
 |----------------------------------------------|-------------------------------------------------|------------------------------------------------------------------------|
 | `FireflyFramework.Cache`                     | `firefly-common-cache`                          | StackExchange.Redis + IMemoryCache port abstraction                    |
 | `FireflyFramework.Observability`             | `firefly-otel-spring-boot-starter`              | OpenTelemetry .NET tracing/metrics/logs configuration                  |
-| `FireflyFramework.Data`                      | `firefly-common-data` (R2DBC)                   | EF Core 9 + filter / pagination / repository helpers                   |
+| `FireflyFramework.Data`                      | `firefly-common-data` (R2DBC)                   | EF Core 10 + filter / pagination / repository helpers                   |
 | `FireflyFramework.Cqrs`                      | `firefly-common-cqrs`                           | Command / query bus + handler discovery + behaviours                   |
 | `FireflyFramework.Eda`                       | `firefly-common-eda`                            | Kafka + Schema Registry + RabbitMQ producer / consumer                 |
 | `FireflyFramework.EventSourcing`             | `firefly-event-sourcing-spring-boot-starter`    | Aggregates, snapshots, projections, outbox, upcasters                  |

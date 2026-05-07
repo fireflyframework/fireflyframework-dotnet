@@ -20,6 +20,5 @@
     <PackageReference Include="Polly.Extensions" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="System.ServiceModel.Http" />
-    <PackageReference Include="System.Net.Http.Json" />
   </ItemGroup>
 </Project>

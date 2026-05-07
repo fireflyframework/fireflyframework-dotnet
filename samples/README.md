@@ -12,7 +12,7 @@ used by every Firefly platform service.
 | `.Interfaces`  | Public DTOs, request/response records, enums. No business logic, no I/O.          | `*-interfaces`           |
 | `.Models`      | Persistence entities + repository contracts. Replace in-memory store with EF Core.| `*-models`               |
 | `.Core`        | Commands, queries, handlers, mappers, business services. Holds the rules.         | `*-core`                 |
-| `.Web`         | Runnable ASP.NET Core 9 host: `Program.cs`, controllers / minimal-API endpoints.  | `*-web` (Spring Boot)    |
+| `.Web`         | Runnable ASP.NET Core 10 host: `Program.cs`, controllers / minimal-API endpoints.  | `*-web` (Spring Boot)    |
 | `.Sdk`         | Typed `HttpClient` for other services to call this one in-process.                | `*-sdk` (codegen target) |
 
 The dependency graph is strictly layered:

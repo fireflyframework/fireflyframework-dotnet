@@ -1,6 +1,6 @@
 # FireflyFramework.Samples.OrdersService.Web
 
-The runnable ASP.NET Core 9 host. Wires the framework, registers
+The runnable ASP.NET Core 10 host. Wires the framework, registers
 infrastructure adapters, and exposes HTTP endpoints.
 
 ## Contents
