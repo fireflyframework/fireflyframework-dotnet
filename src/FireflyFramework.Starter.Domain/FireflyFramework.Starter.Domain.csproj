@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Starter.Domain</RootNamespace>
+    <PackageId>FireflyFramework.Starter.Domain</PackageId>
+    <Description>Meta-package for domain microservices: core + event sourcing. Mirrors fireflyframework-starter-domain.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Starter.Core/FireflyFramework.Starter.Core.csproj" />
+    <ProjectReference Include="../FireflyFramework.EventSourcing/FireflyFramework.EventSourcing.csproj" />
+  </ItemGroup>
+</Project>

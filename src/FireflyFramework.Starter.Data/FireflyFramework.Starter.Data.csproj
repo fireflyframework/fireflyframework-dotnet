@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Starter.Data</RootNamespace>
+    <PackageId>FireflyFramework.Starter.Data</PackageId>
+    <Description>Meta-package for ETL/batch services: core + data + full Polly resilience. Mirrors fireflyframework-starter-data.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Starter.Core/FireflyFramework.Starter.Core.csproj" />
+    <ProjectReference Include="../FireflyFramework.Data/FireflyFramework.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.RateLimiting" />
+  </ItemGroup>
+</Project>

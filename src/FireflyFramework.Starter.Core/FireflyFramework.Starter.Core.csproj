@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Starter.Core</RootNamespace>
+    <PackageId>FireflyFramework.Starter.Core</PackageId>
+    <Description>Meta-package for the infrastructure tier (web, observability, cache, EDA, CQRS, resilience). Mirrors fireflyframework-starter-core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Web/FireflyFramework.Web.csproj" />
+    <ProjectReference Include="../FireflyFramework.Observability/FireflyFramework.Observability.csproj" />
+    <ProjectReference Include="../FireflyFramework.Cache/FireflyFramework.Cache.csproj" />
+    <ProjectReference Include="../FireflyFramework.Eda/FireflyFramework.Eda.csproj" />
+    <ProjectReference Include="../FireflyFramework.Cqrs/FireflyFramework.Cqrs.csproj" />
+    <ProjectReference Include="../FireflyFramework.Client/FireflyFramework.Client.csproj" />
+    <ProjectReference Include="../FireflyFramework.Validators/FireflyFramework.Validators.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.RateLimiting" />
+  </ItemGroup>
+</Project>

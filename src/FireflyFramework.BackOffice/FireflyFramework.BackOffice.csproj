@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.BackOffice</RootNamespace>
+    <PackageId>FireflyFramework.BackOffice</PackageId>
+    <Description>Back-office context, security, audit trail and middleware. Mirrors fireflyframework-backoffice.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="../FireflyFramework.Starter.Application/FireflyFramework.Starter.Application.csproj" />
+  </ItemGroup>
+</Project>
