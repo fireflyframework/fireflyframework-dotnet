@@ -172,42 +172,60 @@ A complete reference implementation lives at
 pattern, naming conventions, and rationale are documented in
 [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md).
 
-### A `Program.cs` for a Firefly service
+---
 
-```csharp
-using FireflyFramework.Cqrs.Buses;
-using FireflyFramework.Starter.Core;
-using FireflyFramework.Web.DependencyInjection;
-using ExecutionContext = FireflyFramework.Cqrs.Context.ExecutionContext;
+## Quickstart — run the Orders sample
 
-var builder = WebApplication.CreateBuilder(args);
+The fastest way to see Firefly working is to run the reference sample
+that ships in this repository. It exercises every cross-cutting concern
+(idempotency, query caching, OpenAPI, the startup banner) end-to-end on
+the in-memory infrastructure tier — no Kafka, Redis, or database
+required.
 
-builder.Services.AddFireflyCore(
-    builder.Configuration,
-    serviceName:    "orders-service",
-    serviceVersion: "1.0.0",
-    cqrsAssemblies: new[] { typeof(PlaceOrderCommand).Assembly });
-
-builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
-
-var app = builder.Build();
-app.UseFireflyWeb();   // RFC 7807 problem-details + idempotency + correlation
-
-app.MapPost("/api/v1/orders", async (PlaceOrderRequest req, ICommandBus bus, CancellationToken ct) =>
-{
-    var ctx = new ExecutionContext { UserId = "demo-user", TenantId = "demo-tenant" };
-    var orderId = await bus.SendAsync(new PlaceOrderCommand(req.Sku, req.Quantity, req.UnitPrice), ctx, ct);
-    return Results.Created($"/api/v1/orders/{orderId}", new { orderId });
-});
-
-await app.RunAsync();
+```bash
+brew install dotnet                        # macOS — or any official .NET 10 installer
+source .envrc                              # exports DOTNET_ROOT and prepends dotnet to PATH
+dotnet build  FireflyFramework.sln
+dotnet run    --project samples/FireflyFramework.Samples.OrdersService.Web
 ```
 
-`AddFireflyCore` registers Web, Cache, Observability, EDA, and CQRS in a
-single call. `UseFireflyWeb` installs the global exception handler (every
-unhandled exception becomes RFC 7807 `application/problem+json`) and the
-idempotency middleware (any request carrying an `Idempotency-Key` header
-returns the cached response on retry).
+The startup banner identifies the active starter, the application name
+and version, and the resolved .NET runtime, then ASP.NET Core hosting
+takes over.
+
+Place an order:
+
+```bash
+curl -X POST http://localhost:5000/api/v1/orders \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: demo-1' \
+  -d '{"sku":"SKU-1","quantity":2,"unitPrice":12.50}'
+# → 201 Created  { "orderId": "..." }
+```
+
+Replay the same request — the idempotency middleware returns the
+cached response without re-running the handler:
+
+```bash
+curl -X POST http://localhost:5000/api/v1/orders \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: demo-1' \
+  -d '{"sku":"SKU-1","quantity":2,"unitPrice":12.50}'
+# → 201 Created  (identical body, no duplicate order)
+```
+
+Read the order back; the second call hits the per-query cache
+configured by `GetOrderQuery`:
+
+```bash
+curl http://localhost:5000/api/v1/orders/<id-from-previous-response>
+```
+
+The OpenAPI document is at `/openapi/v1.json`. The sample's full
+five-project shape — `.Interfaces`, `.Models`, `.Core`, `.Web`,
+`.Sdk` — is the same one you copy when starting a new service: see
+[`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) for the
+walkthrough.
 
 ---
 
@@ -216,49 +234,19 @@ returns the cached response on retry).
 Every option binds under the `Firefly:*` namespace in `appsettings.json`,
 with the standard ASP.NET Core override precedence (environment variables
 like `Firefly__Web__Idempotency__Enabled`, command-line, user secrets).
-The full schema, with example values for every section, is documented in
+The full schema — verified against the actual `*Options` classes — is in
 [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
 
 ```json
 {
   "Firefly": {
-    "Web":           { "Idempotency": { "Enabled": true, "TtlSeconds": 600 } },
-    "Cache":         { "DefaultProvider": "Memory" },
-    "Observability": { "Otel": { "OtlpEndpoint": "http://otel-collector:4317" } },
-    "Eda":           { "Provider": "InMemory" }
+    "Web":           { "Idempotency": { "Enabled": true, "HeaderName": "X-Idempotency-Key", "Ttl": "01:00:00" } },
+    "Cache":         { "Provider": "Memory" },
+    "Observability": { "Tracing": { "Enabled": true, "OtlpEndpoint": "http://otel-collector:4317" } },
+    "Eda":           { "DefaultPublisher": "InMemory", "DefaultConsumer": "InMemory" }
   }
 }
 ```
-
----
-
-## Getting started
-
-### Prerequisites
-
-- **.NET 10 SDK** (`10.0.100` or later)
-- **Apache 2.0** licence terms
-
-```bash
-brew install dotnet            # macOS — or any official .NET 10 installer
-source .envrc                  # exports DOTNET_ROOT and prepends dotnet to PATH
-dotnet --version               # expect 10.0.x
-```
-
-### Build and run
-
-```bash
-dotnet build  FireflyFramework.sln
-dotnet run --project samples/FireflyFramework.Samples.OrdersService.Web
-```
-
-The Orders sample exposes:
-
-- `POST /api/v1/orders` — place an order (honours `X-Idempotency-Key`)
-- `GET  /api/v1/orders/{id}` — read an order (cached query)
-- `/openapi/v1.json` — OpenAPI document
-- `/metrics` — Prometheus exposition (when the Prometheus exporter is
-  enabled)
 
 ---
 

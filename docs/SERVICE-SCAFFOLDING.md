@@ -156,14 +156,14 @@ PII masking), Cache, Observability (OpenTelemetry), EDA (in-memory by
 default, swappable), and CQRS (handler discovery scoped to the supplied
 assembly).
 
-For richer needs:
+For richer needs, replace `AddFireflyCore` with one of:
 
-| Need                        | Replace `AddFireflyCore` with                    |
-|-----------------------------|--------------------------------------------------|
-| Plugins + IDP + Saga        | `AddFireflyApplication`                          |
-| EventSourcing + AggregateRoot| `AddFireflyDomain`                              |
-| EF Core + Polly             | `AddFireflyData`                                 |
-| BackOffice context          | `AddFireflyBackOffice`                           |
+| Starter call            | Adds on top of `AddFireflyCore`                                   |
+|-------------------------|-------------------------------------------------------------------|
+| `AddFireflyApplication` | `IExtensionRegistry` + `IPluginManager` (IDP / orchestration adapters are service-specific — register one of `KeycloakIdpAdapter` / `AzureAdIdpAdapter` / `CognitoIdpAdapter` / `InternalDbIdpAdapter` against `IIdpAdapter`) |
+| `AddFireflyDomain`      | In-memory `IEventStore`. Replace with `EfCoreEventStore` for production. |
+| `AddFireflyData`        | Adds Polly resilience helpers; the application registers its own `DbContext` via `services.AddDbContext<TDb>(...)`. |
+| `AddFireflyBackOffice`  | Everything `AddFireflyApplication` adds plus the back-office context resolver and middleware. |
 
 ### `.Sdk`
 
