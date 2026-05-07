@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.EventSourcing</RootNamespace>
+    <PackageId>FireflyFramework.EventSourcing</PackageId>
+    <Description>Event-sourced aggregates: AggregateRoot, EventStore over EF Core, snapshots, optimistic concurrency, transactional outbox, projections, event upcasting, multi-tenancy. Mirrors fireflyframework-eventsourcing.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../FireflyFramework.Data/FireflyFramework.Data.csproj" />
+    <ProjectReference Include="../FireflyFramework.Eda/FireflyFramework.Eda.csproj" />
+    <ProjectReference Include="../FireflyFramework.Cache/FireflyFramework.Cache.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+</Project>
