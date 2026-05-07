@@ -23,13 +23,23 @@ public sealed class AzureBlobDocumentContentAdapter : IDocumentContentPort
 {
     private readonly BlobContainerClient _container;
 
+    /// <summary>Production constructor — wires the container client from connection-string or DefaultAzureCredential.</summary>
     public AzureBlobDocumentContentAdapter(IOptions<AzureBlobOptions> options)
+        : this(BuildContainer(options.Value)) { }
+
+    /// <summary>
+    /// Testing / advanced-DI constructor — accepts an explicit <see cref="BlobContainerClient"/>. Use this when
+    /// you want to share a client across adapters or substitute a fake (NSubstitute) in tests.
+    /// </summary>
+    public AzureBlobDocumentContentAdapter(BlobContainerClient container)
     {
-        var opt = options.Value;
-        _container = opt.ConnectionString is not null
-            ? new BlobContainerClient(opt.ConnectionString, opt.ContainerName)
-            : new BlobContainerClient(new Uri($"{opt.AccountUrl}/{opt.ContainerName}"), new global::Azure.Identity.DefaultAzureCredential());
+        ArgumentNullException.ThrowIfNull(container);
+        _container = container;
     }
+
+    private static BlobContainerClient BuildContainer(AzureBlobOptions opt) => opt.ConnectionString is not null
+        ? new BlobContainerClient(opt.ConnectionString, opt.ContainerName)
+        : new BlobContainerClient(new Uri($"{opt.AccountUrl}/{opt.ContainerName}"), new global::Azure.Identity.DefaultAzureCredential());
 
     public async Task<Stream> GetContentAsync(Guid documentId, CancellationToken ct = default) =>
         await _container.GetBlobClient(documentId.ToString()).OpenReadAsync(cancellationToken: ct).ConfigureAwait(false);

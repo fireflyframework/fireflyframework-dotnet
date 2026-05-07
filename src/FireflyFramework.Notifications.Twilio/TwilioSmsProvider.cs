@@ -1,6 +1,6 @@
 using FireflyFramework.Notifications;
 using Microsoft.Extensions.Options;
-using Twilio;
+using Twilio.Clients;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
@@ -17,21 +17,38 @@ public sealed class TwilioOptions
 public sealed class TwilioSmsProvider : ISmsProvider
 {
     private readonly TwilioOptions _opt;
+    private readonly ITwilioRestClient _client;
 
+    /// <summary>
+    /// Production constructor — builds a default <see cref="TwilioRestClient"/> from the configured
+    /// SID / auth token. Pick this overload when registering through DI.
+    /// </summary>
     public TwilioSmsProvider(IOptions<TwilioOptions> options)
+        : this(options, new TwilioRestClient(options.Value.AccountSid, options.Value.AuthToken)) { }
+
+    /// <summary>
+    /// Constructor that accepts an explicit <see cref="ITwilioRestClient"/>. Used by tests with a
+    /// WireMock-pointing client and by hosts that share a single Twilio client across adapters.
+    /// </summary>
+    public TwilioSmsProvider(IOptions<TwilioOptions> options, ITwilioRestClient client)
     {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(client);
         _opt = options.Value;
-        TwilioClient.Init(_opt.AccountSid, _opt.AuthToken);
+        _client = client;
     }
 
     public async Task<SmsResponse> SendSmsAsync(SmsRequest request, CancellationToken ct = default)
     {
         try
         {
-            var message = await MessageResource.CreateAsync(
-                from: new PhoneNumber(request.FromNumber ?? _opt.DefaultFromNumber),
-                to: new PhoneNumber(request.PhoneNumber),
-                body: request.Message).ConfigureAwait(false);
+            var options = new CreateMessageOptions(new PhoneNumber(request.PhoneNumber))
+            {
+                From = new PhoneNumber(request.FromNumber ?? _opt.DefaultFromNumber),
+                Body = request.Message,
+            };
+
+            var message = await MessageResource.CreateAsync(options, _client).ConfigureAwait(false);
             return new SmsResponse(message.Sid, true, null);
         }
         catch (Exception ex)
