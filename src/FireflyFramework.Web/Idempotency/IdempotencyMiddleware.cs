@@ -73,6 +73,9 @@ public sealed class IdempotencyMiddleware
             return;
         }
 
+        // The request path is part of the cache key so the same idempotency
+        // key can be reused across endpoints (e.g. POST /orders and POST
+        // /payments) without one replay leaking another endpoint's response.
         var cacheKey = $"firefly:idempotency:{context.Request.Path}:{key}";
         var cached = await _cache.GetStringAsync(cacheKey).ConfigureAwait(false);
         if (cached is not null)
@@ -96,6 +99,10 @@ public sealed class IdempotencyMiddleware
             }
         }
 
+        // We swap the response body for a MemoryStream so we can both forward
+        // the bytes downstream and capture them for caching. ASP.NET writes
+        // through Response.Body directly (no intermediate buffer), so without
+        // this swap the bytes hit the wire before we ever see them.
         var originalBody = context.Response.Body;
         await using var buffer = new MemoryStream();
         context.Response.Body = buffer;
@@ -109,6 +116,11 @@ public sealed class IdempotencyMiddleware
             buffer.Position = 0;
             await buffer.CopyToAsync(originalBody).ConfigureAwait(false);
 
+            // Only 2xx is cached. 4xx responses (validation errors, auth
+            // failures) are deliberately *not* cached — the client may retry
+            // after fixing the request, and we don't want to replay an old
+            // 400. 5xx responses likewise: the upstream issue may resolve
+            // and a retry should reach the handler again.
             if (context.Response.StatusCode is >= 200 and < 300)
             {
                 var entry = new CachedResponse(

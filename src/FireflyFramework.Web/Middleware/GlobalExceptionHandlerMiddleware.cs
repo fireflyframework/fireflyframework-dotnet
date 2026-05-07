@@ -67,6 +67,13 @@ public sealed class GlobalExceptionHandlerMiddleware
         }
         catch (Exception ex)
         {
+            // Translation order matters:
+            //   1. ServiceException — already in the right shape, pass through.
+            //   2. FireflyException — has a stable ErrorCode but no HTTP status,
+            //      so we wrap as a 500 with the framework's error category.
+            //   3. Anything else — try registered converters (e.g. EF Core
+            //      DbUpdateConcurrencyException → 409, FluentValidation → 400)
+            //      then fall back to a generic 500.
             var translated = ex switch
             {
                 ServiceException se => se,
@@ -81,6 +88,9 @@ public sealed class GlobalExceptionHandlerMiddleware
 
     private async Task WriteResponseAsync(HttpContext context, ServiceException ex)
     {
+        // If the response has already begun streaming, headers are committed and
+        // we can't change the status code or replace the body. The best we can
+        // do is log loudly so the operator notices the half-failed response.
         if (context.Response.HasStarted)
         {
             _log.LogWarning(ex, "Response already started; cannot translate exception");

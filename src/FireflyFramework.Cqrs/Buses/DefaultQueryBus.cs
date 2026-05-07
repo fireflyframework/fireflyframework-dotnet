@@ -45,6 +45,12 @@ public sealed class DefaultQueryBus : IQueryBus
                 string.Join("; ", auth.Errors.Select(e => $"{e.Code}: {e.Message}")), auth.Errors);
         }
 
+        // Cache lookup BEFORE handler dispatch — this is the whole point of
+        // IsCacheable. We use the framework's ICacheAdapter (in-memory or
+        // Redis depending on config) so the same cache backs idempotency,
+        // OAuth2 token cache, and query results uniformly. The default(TResult)
+        // check guards against a previously-cached null/default value
+        // returning as a "hit" that bypasses the handler.
         if (query.IsCacheable && _cache is not null && query.CacheKey is { } key)
         {
             var hit = await _cache.GetAsync<TResult>(CachePrefix + key, ct).ConfigureAwait(false);

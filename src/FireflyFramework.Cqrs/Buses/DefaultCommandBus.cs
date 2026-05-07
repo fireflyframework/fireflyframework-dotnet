@@ -35,6 +35,11 @@ public sealed class DefaultCommandBus : ICommandBus
         ICommand<TResult> command, ExecutionContext context, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(command);
+
+        // Validation runs first (cheaper than authorization on the typical path,
+        // and it lets us return a 400-shaped error before we touch the auth
+        // store). Authorization runs second, before handler dispatch, so a
+        // forbidden caller never reaches handler code that may mutate state.
         var validation = await command.ValidateAsync(ct).ConfigureAwait(false);
         if (!validation.IsValid)
         {
@@ -48,6 +53,11 @@ public sealed class DefaultCommandBus : ICommandBus
                 string.Join("; ", auth.Errors.Select(e => $"{e.Code}: {e.Message}")), auth.Errors);
         }
 
+        // We resolve the closed generic ICommandHandler<TCommand, TResult> via
+        // reflection because the bus exposes one untyped SendAsync — callers
+        // pass the command's runtime type. The reflection cost is one
+        // GetMethod+Invoke per dispatch; the alternative (a typed bus per
+        // command type) is hostile to dynamic discovery.
         var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
         var handler = _provider.GetService(handlerType)
             ?? throw new InvalidOperationException($"No command handler registered for {command.GetType().FullName}");
