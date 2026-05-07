@@ -114,14 +114,14 @@
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.4" />
 
     <!-- Observability: OpenTelemetry stack (Micrometer + OpenTelemetry equivalent) -->
-    <PackageVersion Include="OpenTelemetry" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Api" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.12.0-beta.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+    <PackageVersion Include="OpenTelemetry" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Api" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.15.0-beta.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.3" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
 
     <!-- Logging: Logback+Logstash equivalent -->
     <PackageVersion Include="Serilog" Version="4.2.0" />
@@ -135,23 +135,24 @@
     <!-- HTTP / WebClient (System.Net.Http.Json is in the .NET 10 framework — no package needed) -->
 
     <!-- Transitive pins addressing security advisories surfaced via NU1902/NU1903 -->
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.0" />
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.7" />
+    <PackageVersion Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
 
     <!-- AWS (Java AWS SDK v2 equivalent) -->
-    <PackageVersion Include="AWSSDK.Core" Version="3.7.405.5" />
+    <PackageVersion Include="AWSSDK.Core" Version="3.7.500" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.413.4" />
     <PackageVersion Include="AWSSDK.SQS" Version="3.7.400.86" />
     <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.400.86" />
     <PackageVersion Include="AWSSDK.Kinesis" Version="3.7.402.86" />
     <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.405.5" />
-    <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="3.7.402.86" />
+    <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="3.7.403" />
 
     <!-- Azure -->
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
-    <PackageVersion Include="Azure.Identity" Version="1.13.1" />
+    <PackageVersion Include="Azure.Identity" Version="1.16.0" />
     <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.18.3" />
-    <PackageVersion Include="Microsoft.Identity.Client" Version="4.66.2" />
-    <PackageVersion Include="Microsoft.Graph" Version="5.66.0" />
+    <PackageVersion Include="Microsoft.Identity.Client" Version="4.76.0" />
+    <PackageVersion Include="Microsoft.Graph" Version="5.99.0" />
 
     <!-- Google Cloud -->
     <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.21.0" />
@@ -162,18 +163,18 @@
     <!-- Identity Provider integrations -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.6.1" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.1" />
     <PackageVersion Include="OpenIddict.AspNetCore" Version="6.0.0" />
     <PackageVersion Include="Keycloak.Net.Core" Version="1.0.31" />
 
     <!-- ECM e-signature SDKs -->
-    <PackageVersion Include="DocuSign.eSign.dll" Version="6.10.0" />
+    <PackageVersion Include="DocuSign.eSign.dll" Version="7.0.0" />
 
     <!-- Notifications providers -->
     <PackageVersion Include="SendGrid" Version="9.29.3" />
-    <PackageVersion Include="Twilio" Version="7.7.2" />
+    <PackageVersion Include="Twilio" Version="7.8.0" />
 
     <!-- Cryptography -->
     <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.0" />
