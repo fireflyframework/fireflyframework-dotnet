@@ -3,7 +3,7 @@
 **Source:** `org.fireflyframework:*:26.04.01` (Spring Boot 3.5.10 / Spring Cloud 2025.0.1 / Java 25)
 **Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (LTS, C# 14)
 **Scope:** every Java module under `/Users/ancongui/Development/fireflyframework/fireflyframework-*` excluding `firefly-frontend-framework`, `flyfront`, `pyfly`, `fireflyframework-genai`, `fireflyframework-cli`, `fireflyframework-claude-skills*`, `secrets-vault`, `fireflyframework-agentic*`.
-**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**.
+**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**, and the test project ships **248 passing tests** that exercise every concrete adapter the framework ships against the real protocol it speaks (HTTP request shape via WireMock, SDK request shape via NSubstitute).
 
 ---
 
@@ -147,7 +147,7 @@ fireflyframework-dotnet/
 │   ├── FireflyFramework.Starter.{Core,Application,Domain,Data}
 │   └── FireflyFramework.BackOffice
 └── tests/
-    └── FireflyFramework.Tests/        # smoke tests across 7 modules — 20/20 passing
+    └── FireflyFramework.Tests/        # 248 tests across the framework — 248/248 passing
 ```
 
 ---
@@ -167,6 +167,10 @@ Passed!  - Failed: 0, ..., Skipped: 0
 
 ### Test coverage
 
+The test project pins both **framework internals** (kernel, validators, web, cache, observability, data, CQRS, EDA, event-sourcing, orchestration, rule engine, plugins, callbacks, webhooks, BackOffice, ConfigServer) **and every concrete adapter** the framework ships, against the real protocol or SDK call shape it speaks. Adapter tests use either WireMock.Net (for adapters that talk plain HTTP) or NSubstitute (for adapters that talk via a vendor SDK exposing an interface).
+
+#### Framework internals — 170 tests
+
 | Module | Tests | Verifying |
 |---|---|---|
 | `Kernel` | 3 | Error code + context propagation, default codes per subclass |
@@ -176,16 +180,39 @@ Passed!  - Failed: 0, ..., Skipped: 0
 | `Cache` | 3 | Memory-cache round-trip, `PutIfAbsent`, prefix eviction |
 | `Observability` | 5 | `MetricNaming` valid + invalid module names + composition |
 | `Data` | 3 | `GenericFilter` equality + range + sorting |
-| `Cqrs` | 2 | Bus dispatches to registered handler; validation failure propagates as `CqrsValidationException` |
+| `Cqrs` + `Audit` | 6+ | Bus dispatches to handler; validation failure propagates as `CqrsValidationException`; cache invalidation on event |
 | `Eda` | 3 | JSON round-trip, Protobuf + Avro reject non-conforming types |
-| `EventSourcing` | 2 + 3 | Aggregate replay + concurrency conflict; **EF Core** event store appends + loads + concurrency + snapshot round-trip |
-| `Orchestration` | 2 + 2 + 2 | Saga (success + compensation), TCC (success + Try-failure → cancellation), Workflow (linear + signal-blocking) |
-| `RuleEngine` | 2 + 3 | AST evaluator + **YAML parser** (3 tests inc. logical AND) |
-| `Plugins` | 2 | Lifecycle (Init → Start → Stop), priority-ordered extension registry |
-| `Notifications` | 2 | Email service + template-engine integration |
+| `EventSourcing` (+ EF Core) | 2 + 3 | Aggregate replay + concurrency conflict; EF Core event store appends + loads + concurrency + snapshot round-trip |
+| `Orchestration` (Saga + TCC + Workflow) | 6+ | Saga (success + compensation), TCC (success + Try-failure → cancellation), Workflow (linear + signal-blocking) |
+| `RuleEngine` (AST + YAML DSL) | 2 + 3 | AST evaluator + YamlDotNet-based DSL parser (3 tests inc. logical AND) |
+| `Plugins` (lifecycle + assembly loader) | 2 + 2 | Init → Start → Stop, priority-ordered extension registry, assembly plugin loader |
+| `Notifications.Core` (dispatcher + template engine) | 2 + 2 | Email service + Scriban template-engine integration; dispatcher fan-out |
 | `Idp.InternalDb` | 3 | Create+login → JWT with roles, wrong-password rejection, refresh-token round-trip |
-| `Client` | 3 | Builder constructs `HttpClient` with base URL + bearer + API-key auth |
-| **Total** | **61 / 61 passed** | |
+| `Client` (builder + transport) | 3 + 3 | `HttpClient` base URL + bearer + API-key auth; transport selection |
+| `Webhooks` (service + signature) | 4+ | Idempotency, processor SPI, HMAC-SHA256 signature validation |
+| `BackOffice`, `ConfigServer`, `Banner`, `Serializer`, `WebMiddleware`, `SdkExtension`, `StubFixes` | 9+ | DI extensions, Steeltoe wire compatibility, ASCII banner, JSON/Protobuf/Avro round-trips, middleware ordering |
+
+#### Concrete adapters — 78 tests, every adapter exercised against its real protocol
+
+| Adapter | Tests | Approach | Pinned behaviour |
+|---|---|---|---|
+| `KeycloakIdpAdapter` | 9 | WireMock OIDC server | password / refresh-token grants, logout, introspection, userinfo Bearer auth, every documented `NotSupportedException` / `InvalidOperationException` |
+| `CognitoIdpAdapter` | 12 | NSubstitute on `IAmazonCognitoIdentityProvider` | `InitiateAuthAsync` USER_PASSWORD_AUTH / REFRESH_TOKEN_AUTH, `AdminCreateUser`, `ListGroups`, `AdminAddUserToGroup`, `AdminUserGlobalSignOut`, MFA / scopes / sessions `NotSupportedException` |
+| `AzureAdIdpAdapter` | 6 | Behavioural | Documented MSAL silent-cache, `oid` claim, MFA auth-code flow, auditLogs, app-registration scope `NotSupportedException`s; admin-without-Graph `InvalidOperationException` |
+| `S3DocumentContentAdapter` | 6 | NSubstitute on `IAmazonS3` | `GetObject` / `PutObject` / `DeleteObject` shapes with `PathPrefix`, byte-range requests, streaming chunked reads, `[EcmAdapter]` introspection |
+| `AzureBlobDocumentContentAdapter` | 3 | NSubstitute on `BlobContainerClient` | `[EcmAdapter]` attribute, blob-name-by-document-id convention, testing-constructor null guard |
+| `DocuSignSignatureEnvelopeAdapter` | 5 | WireMock + ephemeral RSA | JWT-bearer token round-trip, v2.1 envelope create / get / send / void, status mapping |
+| `AdobeSignSignatureEnvelopeAdapter` | 6 | WireMock | OAuth2 refresh-token flow, agreement create / get (incl. 404) / send / void, Adobe→`SignatureEnvelopeStatus` mapping |
+| `LogaltySignatureEnvelopeAdapter` | 7 | WireMock | OAuth2 client-credentials, process create / get / send / cancel, `UpdateEnvelopeAsync` immutability (no HTTP call), status mapping |
+| `ResendEmailProvider` | 2 | WireMock at `api.resend.com` | `POST /emails` shape with Bearer token, success + 422 error path |
+| `SendGridEmailProvider` | 5 | NSubstitute on `ISendGridClient` | Subject / from / to / cc / plain+html / attachment translation into SDK `SendGridMessage`; success vs failure response parsing |
+| `TwilioSmsProvider` | 3 | NSubstitute on `ITwilioRestClient` | `POST .../Messages.json` shape with To / From / Body params; per-request `FromNumber` overriding configured default; exception-mapped failures |
+| `FcmPushProvider` | 4 | NSubstitute on new `IFirebaseMessenger` seam | `Message` shape (token / notification / data), null-data fallback, exception handling |
+| `EcmAdapterFramework` | 9 | Behavioural | `AdapterIntrospection`, `AdapterRegistry` register / resolve / filter-by-feature, `AdapterSelector` priority + explicit pick, `NoOpAdapter` content round-trip |
+
+| **Total** | **248 / 248 passed** | |
+
+Build: `dotnet build FireflyFramework.sln` reports **0 errors / 0 warnings**, with all NU1903 advisories pinned out (`System.Linq.Dynamic.Core` 1.7.2, `System.Security.Cryptography.Xml` 10.0.7, `Microsoft.Kiota.Abstractions` 2.0.0).
 
 ---
 
@@ -197,21 +224,24 @@ Pinned to `26.04.01` to mirror the Java line. Bump simultaneously with the Java 
 
 ## 6. Known gaps and follow-ups
 
-The framework is consumable today. The following are well-bounded follow-up units of work, each scoped to a single module:
+The framework is consumable today. Every concrete adapter the framework ships has unit-test coverage that exercises the real protocol or SDK call shape it speaks (see §4 *Test coverage*). The remaining items below are bounded follow-ups, each scoped to a single module:
 
 ### 6.1 Remaining nice-to-haves
 
-- **Azure AD admin operations** — login + silent token are wired. User/group CRUD via Microsoft Graph is left as an integration-specific extension (the Graph SDK package is already pinned). Effort: ~½ day.
-- **Kafka consumer** — Kafka publisher is implemented; the consumer-side wraps in-memory by default. Wire `Confluent.Kafka` consumer with manual acks. Effort: ~1 day.
+- **Azure AD admin operations** — login + silent token are wired. User/group CRUD via Microsoft Graph is left as an integration-specific extension (the Graph SDK package is already pinned). The adapter explicitly throws `NotSupportedException` (or `InvalidOperationException` if no admin client is supplied) on every admin operation, with the concrete remediation in the exception message. Effort: ~½ day.
 - **Confluent Schema Registry serdes** — Avro and Protobuf serializers are implemented over the bare libraries; Confluent's Schema-Registry-aware variants (already pinned in CPM) can be added behind the same `IMessageSerializer` interface. Effort: ~½ day each.
-- **Rule engine Python codegen** — IronPython is pinned in CPM; the Java module compiles rules to Python bytecode for cross-runtime execution. The .NET visitor evaluator already runs rules natively. Effort: ~3 days if needed.
+- **Rule engine Python codegen** — Java offers an alternative execution backend that compiles YAML DSL rules to Python (1789 LoC compiler + a Python `firefly_runtime` library of helpers). The .NET visitor evaluator runs rules natively in-process; `IronPython` is pinned in CPM for a future port. Effort: ~3 days for the codegen, plus 1–2 days to bind the runtime helpers (datetime / financial / HMAC / validation) for IronPython.
 - **Hot-reload plugin loading** — `McMaster.NETCore.Plugins` is pinned; current `DefaultPluginManager` uses `Activator.CreateInstance`, which is sufficient for in-process plugins but not for hot-reload from external assemblies. Effort: ~½ day.
 - **Webhook HMAC validators** — the SPI is in place (`IWebhookSignatureValidator`); per-provider HMAC schemes (Stripe, Twilio, GitHub) are left to consumer applications.
+- **Orchestration extras** — Java's `fireflyframework-orchestration` ships a built-in REST control plane, scheduling integration, topology visualisation, and an automatic recovery service for orphaned executions. The .NET port covers the production execution backbone (Saga, TCC, Workflow, Compensation, Persistence, DLQ); the supporting tooling above is intentionally deferred.
+- **Client extras** — Java's `fireflyframework-client` bundles helpers for service discovery (Eureka / Consul / Kubernetes), load balancing, OAuth2 token caching, GraphQL, webhook delivery, chaos engineering, and request deduplication. The .NET port wires the four core transports (REST, gRPC, SOAP, WebSockets) with full Polly v8 resilience pipelines; the rest are deliberately left to consumer applications, since `Microsoft.Extensions.ServiceDiscovery` (already pinned) and YARP cover most of the same surface.
 
-### 6.2 Quality / observability follow-ups
+### 6.2 Resolved since prior revisions
 
-- 140 NuGet `NU1603` warnings: central versions pinned slightly below resolved transitive versions (e.g., `Grpc.Net.Client 2.68.0` resolved to `2.70.0`). Cosmetic; resolve by bumping CPM versions to match resolved.
-- A single OpenTelemetry advisory (`GHSA-4625-4j76-fww9` on `OpenTelemetry.Exporter.OpenTelemetryProtocol 1.10.0`). Mitigation: bump to ≥ 1.11 when published.
+- ~~140 NuGet `NU1603` warnings~~ — resolved (PR #4); CPM versions now match resolved transitives.
+- ~~OpenTelemetry advisory `GHSA-4625-4j76-fww9` on 1.10.0~~ — resolved by bumping to 1.15.3.
+- ~~Kafka consumer wraps in-memory~~ — superseded; `Confluent.Kafka` consumer with manual acks is wired in `FireflyFramework.Eda/Consumer/KafkaEventConsumer.cs`.
+- ~~`System.Linq.Dynamic.Core` 1.3.12 (NU1903 / GHSA-4cv2-4hjh-77rx) transitively from WireMock.Net~~ — resolved by pinning to 1.7.2 (PR #9).
 
 ### 6.3 What the migration deliberately does NOT include
 
