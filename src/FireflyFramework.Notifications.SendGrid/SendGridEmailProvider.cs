@@ -9,16 +9,32 @@ public sealed class SendGridOptions
 {
     public const string SectionName = "Firefly:Notifications:SendGrid";
     public string ApiKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Override the default <c>https://api.sendgrid.com</c> host. Used by tests to point
+    /// the SendGrid SDK at WireMock; production deployments leave it unset.
+    /// </summary>
+    public string? Host { get; set; }
 }
 
 public sealed class SendGridEmailProvider : IEmailProvider
 {
-    private readonly SendGridClient _client;
+    private readonly ISendGridClient _client;
 
+    /// <summary>Production constructor — builds a real <see cref="SendGridClient"/>.</summary>
     public SendGridEmailProvider(IOptions<SendGridOptions> options)
+        : this(BuildClient(options.Value)) { }
+
+    /// <summary>Testing constructor — accepts an explicit <see cref="ISendGridClient"/>.</summary>
+    public SendGridEmailProvider(ISendGridClient client)
     {
-        _client = new SendGridClient(options.Value.ApiKey);
+        ArgumentNullException.ThrowIfNull(client);
+        _client = client;
     }
+
+    private static SendGridClient BuildClient(SendGridOptions opt) => opt.Host is null
+        ? new SendGridClient(opt.ApiKey)
+        : new SendGridClient(new SendGridClientOptions { ApiKey = opt.ApiKey, Host = opt.Host });
 
     public async Task<EmailResponse> SendEmailAsync(EmailRequest request, CancellationToken ct = default)
     {

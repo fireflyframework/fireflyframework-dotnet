@@ -47,6 +47,14 @@
     <ProjectReference Include="../../src/FireflyFramework.Idp.AzureAd/FireflyFramework.Idp.AzureAd.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Notifications.Resend/FireflyFramework.Notifications.Resend.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.SendGrid/FireflyFramework.Notifications.SendGrid.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.Twilio/FireflyFramework.Notifications.Twilio.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.Firebase/FireflyFramework.Notifications.Firebase.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm.Storage.Aws/FireflyFramework.Ecm.Storage.Aws.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm.Storage.Azure/FireflyFramework.Ecm.Storage.Azure.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.AdobeSign/FireflyFramework.Ecm.ESignature.AdobeSign.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.DocuSign/FireflyFramework.Ecm.ESignature.DocuSign.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.Logalty/FireflyFramework.Ecm.ESignature.Logalty.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,5 +62,10 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="WireMock.Net" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="SendGrid" />
+    <PackageReference Include="Twilio" />
+    <PackageReference Include="FirebaseAdmin" />
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="Azure.Storage.Blobs" />
   </ItemGroup>
 </Project>

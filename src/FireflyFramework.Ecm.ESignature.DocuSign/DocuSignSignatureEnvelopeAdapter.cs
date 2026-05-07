@@ -20,7 +20,22 @@ public sealed class DocuSignOptions
     public string AccountId { get; set; } = string.Empty;
     public string PrivateKey { get; set; } = string.Empty;
     public string BaseUrl { get; set; } = "https://demo.docusign.net/restapi";
+
+    /// <summary>
+    /// DocuSign OAuth2 auth-server hostname (e.g. <c>account-d.docusign.com</c> for sandbox,
+    /// <c>account.docusign.com</c> for production). The adapter prepends <c>https://</c>
+    /// when calling <c>/oauth/token</c>.
+    /// </summary>
     public string AuthServer { get; set; } = "account-d.docusign.com";
+
+    /// <summary>
+    /// Optional override for the full token-endpoint URL (scheme + host + path). When set, this
+    /// takes precedence over <see cref="AuthServer"/> and is used verbatim. Tests use this to
+    /// point at a WireMock server on http://localhost:{port}/oauth/token; production deployments
+    /// leave it unset and rely on the implicit <c>https://{AuthServer}/oauth/token</c>.
+    /// </summary>
+    public string? AuthTokenUrl { get; set; }
+
     public bool SandboxMode { get; set; } = true;
     public string? ReturnUrl { get; set; }
 }
@@ -175,7 +190,8 @@ public sealed class DocuSignSignatureEnvelopeAdapter : ISignatureEnvelopePort
             ["assertion"] = assertion,
         };
 
-        using var resp = await _http.PostAsync($"https://{_opt.AuthServer}/oauth/token",
+        var tokenUrl = _opt.AuthTokenUrl ?? $"https://{_opt.AuthServer}/oauth/token";
+        using var resp = await _http.PostAsync(tokenUrl,
             new FormUrlEncodedContent(form), ct).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
         var doc = await resp.Content.ReadFromJsonAsync<JsonElement>(cancellationToken: ct).ConfigureAwait(false);
