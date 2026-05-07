@@ -1,5 +1,42 @@
 # FireflyFramework.Webhooks.Interfaces
 
-Webhook public DTOs. Mirrors fireflyframework-webhooks-interfaces.
+Public DTOs for the inbound-webhook subsystem. Pure contract module.
 
-See [`docs/AUDIT.md`](../../docs/AUDIT.md) for the full module mapping and the parent-module README for the API contracts this project implements or extends.
+Mirrors `org.fireflyframework:firefly-webhooks-interfaces`.
+
+## Public surface
+
+```csharp
+public sealed record WebhookEventDto(
+    string                         EventId,
+    string                         ProviderName,
+    JsonElement                    Payload,
+    Dictionary<string, string>     Headers,
+    Dictionary<string, string>     QueryParams,
+    DateTimeOffset                 ReceivedAt,
+    string?                        SourceIp,
+    string                         HttpMethod,
+    Dictionary<string, object?>?   EnrichedMetadata = null);
+
+public sealed record WebhookResponseDto(
+    string  EventId,
+    string  Status,
+    string? Message,
+    long    ProcessingTimeMs);
+```
+
+`Status` values used by the framework:
+`PROCESSED`, `ACCEPTED`, `FAILED`, `REJECTED`, `RATE_LIMITED`, `ERROR`.
+
+## Dependencies
+
+| Reference            | Used for                       |
+|----------------------|--------------------------------|
+| `System.Text.Json`   | `JsonElement` payload type     |
+
+## Java mapping
+
+| .NET                  | Java                              |
+|-----------------------|-----------------------------------|
+| `WebhookEventDto`     | `WebhookEventDTO`                 |
+| `WebhookResponseDto`  | `WebhookResponseDTO`              |

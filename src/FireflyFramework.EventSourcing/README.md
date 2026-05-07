@@ -1,82 +1,191 @@
 # FireflyFramework.EventSourcing
 
-Event-sourced aggregates with optimistic concurrency, snapshots, transactional outbox and projections. Mirrors `fireflyframework-eventsourcing`.
+Event-sourced aggregates with optimistic concurrency, snapshots,
+projections, transactional outbox, and event upcasting. Mirrors
+`org.fireflyframework:firefly-event-sourcing-spring-boot-starter`.
 
-## Quick start
+## Authoring an aggregate
 
 ```csharp
-[DomainEvent("OrderPlaced")]
+using FireflyFramework.EventSourcing.Annotations;
+using FireflyFramework.EventSourcing.Domain;
+
+[DomainEvent("OrderPlaced", Version = 1)]
 public sealed record OrderPlaced(Guid AggregateId, DateTimeOffset Timestamp, string CustomerId, decimal Total)
     : AbstractDomainEvent(AggregateId, Timestamp);
 
 public sealed class Order : AggregateRoot
 {
-    public string? CustomerId { get; private set; }
-    public decimal Total { get; private set; }
+    public string?  CustomerId { get; private set; }
+    public decimal  Total      { get; private set; }
 
-    public static Order Place(Guid id, string customer, decimal total)
+    public static Order Place(Guid id, string customerId, decimal total)
     {
-        var o = new Order();
-        o.ApplyChange(new OrderPlaced(id, DateTimeOffset.UtcNow, customer, total));
-        return o;
+        var order = new Order();
+        order.ApplyChange(new OrderPlaced(id, DateTimeOffset.UtcNow, customerId, total));
+        return order;
     }
 
     private void On(OrderPlaced e)
     {
-        Id = e.AggregateId;
-        CustomerId = e.CustomerId;
-        Total = e.Total;
+        Id          = e.AggregateId;
+        CustomerId  = e.CustomerId;
+        Total       = e.Total;
     }
 }
-
-// Use it
-var order = Order.Place(Guid.NewGuid(), "C-1", 199m);
-await store.AppendEventsAsync(order.Id, order.AggregateType, order.UncommittedChanges, expectedVersion: -1);
-order.MarkChangesAsCommitted();
 ```
 
-## What's inside
+## Saving and loading
 
-| Type | Purpose |
-|---|---|
-| `AggregateRoot` | Base class for event-sourced aggregates. Subclasses emit events with `ApplyChange` and reload state via `LoadFromHistory`. Event handlers are conventional `private void On(SpecificEvent e)` methods (matched reflectively). |
-| `IDomainEvent` + `AbstractDomainEvent` | Domain event contract; `EventType` defaults to the value of `[DomainEvent("…")]`. |
-| `[DomainEvent("…")]` | Tags an event class with a stable type discriminator + version. |
-| `IEventStore` | Append-only event store contract: `AppendEventsAsync`, `LoadEventStreamAsync`, `GetAggregateVersionAsync`, `StreamAllEventsAsync`, `StreamAllEventsFromAsync`. |
-| `ConcurrencyException` | Raised when `expectedVersion` does not match the persisted version. |
-| `InMemoryEventStore` | In-process implementation suitable for tests. |
-| `EfCoreEventStore` | Production-ready EF Core implementation — append-only writes, optimistic concurrency via unique `(aggregateType, aggregateId, version)` index, transactional outbox row per event. Wires through `EventStoreDbContext`. |
-| `ISnapshotStore` + `EfCoreSnapshotStore` | Snapshot persistence with configurable retention. |
-| `TenantContext` | Ambient tenant id propagated via `AsyncLocal<T>` (replaces Reactor Context). |
+```csharp
+using FireflyFramework.EventSourcing.Store;
 
-## Schema (EF Core)
+IEventStore store = sp.GetRequiredService<IEventStore>();
+
+// Save
+var order = Order.Place(Guid.NewGuid(), "C-1", 199m);
+await store.AppendEventsAsync(order.Id, order.AggregateType, order.UncommittedChanges, expectedVersion: -1, ct: ct);
+order.MarkChangesAsCommitted();
+
+// Load
+var stream  = await store.LoadEventStreamAsync(order.Id, "Order", ct: ct);
+var rehydr  = new Order();
+rehydr.LoadFromHistory(stream.Events);
+```
+
+`AppendEventsAsync` throws `ConcurrencyException` if `expectedVersion`
+does not match the persisted version of the aggregate, giving you proper
+optimistic concurrency control.
+
+## Public surface
+
+### Domain layer
+
+| Type                                    | Purpose                                                                 |
+|-----------------------------------------|-------------------------------------------------------------------------|
+| `AggregateRoot`                         | Base class with `Id`, `AggregateType`, `Version`, `UncommittedChanges`, `ApplyChange`, `LoadFromHistory`, `MarkChangesAsCommitted` |
+| `IDomainEvent` / `AbstractDomainEvent`  | Contract: `AggregateId`, `Timestamp`, `EventType`, `EventVersion`       |
+| `[DomainEvent("name", Version = N)]`    | Stable type discriminator + version (used during upcasting)             |
+| `[Aggregate("name")]`                   | Stable aggregate type discriminator                                     |
+
+Event-handler methods are conventional `private void On(SpecificEvent e)`
+methods, matched reflectively by `AggregateRoot.Apply`.
+
+### Event store
+
+| Type                          | Purpose                                                              |
+|-------------------------------|----------------------------------------------------------------------|
+| `IEventStore`                 | Append + load + stream                                               |
+| `StoredEventEnvelope`         | Persisted record: `GlobalSequence`, `AggregateId/Version/Type`, `EventType/Version`, `Payload`, `Headers`, `Timestamp`, `TenantId` |
+| `EventStream`                 | `(AggregateId, AggregateType, Events, Version)` tuple                |
+| `ConcurrencyException`        | Thrown when `expectedVersion` does not match                         |
+| `InMemoryEventStore`          | Reference implementation suitable for tests                          |
+| `EfCoreEventStore`            | Postgres / SqlServer-backed; append-only writes; outbox row per event |
+| `EventStoreDbContext`         | EF Core context for the persistent store                             |
+
+### Snapshots
+
+| Type                  | Purpose                                                |
+|-----------------------|--------------------------------------------------------|
+| `ISnapshotStore`      | Save / load snapshot per aggregate                     |
+| `EfCoreSnapshotStore` | EF Core implementation                                 |
+
+Take a snapshot when an aggregate's event count crosses a threshold to
+avoid replaying the full history on load.
+
+### Projections
+
+| Type                                | Purpose                                                  |
+|-------------------------------------|----------------------------------------------------------|
+| `IProjection`                       | `ApplyAsync(envelope)` to update a read model            |
+| `IProjectionCheckpointStore`        | Persist last-processed `GlobalSequence` per projection   |
+| `InMemoryProjectionCheckpointStore` | Default in-memory implementation                         |
+| `ProjectionRunner`                  | `BackgroundService` that polls the event store, applies events, persists checkpoints |
+
+### Outbox
+
+| Type                  | Purpose                                                                 |
+|-----------------------|-------------------------------------------------------------------------|
+| `EventOutboxProcessor` | `BackgroundService` that drains the outbox table and republishes via `IEventPublisher` (at-least-once) |
+
+### Upcasting
+
+| Type                       | Purpose                                                              |
+|----------------------------|----------------------------------------------------------------------|
+| `IEventUpcaster`           | Migrate an event from one schema version to the next                 |
+| `EventUpcastingService`    | Pipeline that runs every applicable upcaster in order                |
+
+## Schema
+
+The EF Core implementation provisions three tables:
 
 ```sql
 CREATE TABLE firefly_events (
   global_sequence    BIGSERIAL PRIMARY KEY,
-  aggregate_id       UUID NOT NULL,
-  aggregate_version  BIGINT NOT NULL,
+  aggregate_id       UUID         NOT NULL,
+  aggregate_version  BIGINT       NOT NULL,
   aggregate_type     VARCHAR(255) NOT NULL,
   event_type         VARCHAR(255) NOT NULL,
-  event_version      INT NOT NULL,
-  payload            TEXT NOT NULL,
+  event_version      INT          NOT NULL,
+  payload            TEXT         NOT NULL,
   headers_json       TEXT,
-  timestamp          TIMESTAMPTZ NOT NULL,
+  timestamp          TIMESTAMPTZ  NOT NULL,
   tenant_id          VARCHAR(64),
   CONSTRAINT ux_aggregate UNIQUE (aggregate_type, aggregate_id, aggregate_version)
 );
 
-CREATE TABLE firefly_snapshots (id UUID PK, aggregate_id UUID, snapshot_type VARCHAR(255), aggregate_version BIGINT, payload TEXT, timestamp TIMESTAMPTZ);
-CREATE TABLE firefly_event_outbox (id UUID PK, global_sequence BIGINT, event_type VARCHAR(255), destination VARCHAR(255), payload TEXT, published BOOLEAN, created_at TIMESTAMPTZ, published_at TIMESTAMPTZ);
+CREATE TABLE firefly_snapshots (
+  id                 UUID         PRIMARY KEY,
+  aggregate_id       UUID         NOT NULL,
+  snapshot_type      VARCHAR(255) NOT NULL,
+  aggregate_version  BIGINT       NOT NULL,
+  payload            TEXT         NOT NULL,
+  timestamp          TIMESTAMPTZ  NOT NULL
+);
+
+CREATE TABLE firefly_event_outbox (
+  id              UUID PRIMARY KEY,
+  global_sequence BIGINT,
+  event_type      VARCHAR(255),
+  destination     VARCHAR(255),
+  payload         TEXT,
+  published       BOOLEAN,
+  created_at      TIMESTAMPTZ,
+  published_at    TIMESTAMPTZ
+);
 ```
 
-## Wiring EF Core
+## Wiring (production)
 
 ```csharp
+using FireflyFramework.EventSourcing.Store;
+using FireflyFramework.EventSourcing.Store.EfCore;
+
 builder.Services.AddDbContextFactory<EventStoreDbContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("FireflyEventStore")));
+    opt.UseNpgsql(builder.Configuration["Firefly:Data:ConnectionString"]));
+
 builder.Services.AddSingleton<IEventStore>(sp => new EfCoreEventStore(
     sp.GetRequiredService<IDbContextFactory<EventStoreDbContext>>(),
-    knownEventTypes: new[] { typeof(OrderPlaced), /* ... */ }));
-builder.Services.AddSingleton<ISnapshotStore, EfCoreSnapshotStore>();
+    knownEventTypes: new[] { typeof(OrderPlaced) /*, ... */ }));
 ```
+
+## Dependencies
+
+| Reference                              | Used for                       |
+|----------------------------------------|--------------------------------|
+| `FireflyFramework.Kernel`              | Base exceptions                |
+| `FireflyFramework.Eda`                 | Outbox publisher               |
+| `Microsoft.EntityFrameworkCore`        | Persistent store               |
+
+## Java mapping
+
+| .NET                                  | Java                                        |
+|---------------------------------------|---------------------------------------------|
+| `AggregateRoot`                       | `AggregateRoot`                             |
+| `IDomainEvent` / `AbstractDomainEvent` | `Event` / `AbstractEvent`                  |
+| `IEventStore`                         | `EventStore`                                |
+| `ConcurrencyException`                | `ConcurrencyException`                      |
+| `EfCoreEventStore`                    | `R2dbcEventStore`                           |
+| `EventOutboxProcessor`                | `EventOutboxProcessor`                      |
+| `ProjectionRunner`                    | `ProjectionService` + `ProjectionProcessor` |
+| `IEventUpcaster`                      | `EventUpcaster`                             |
