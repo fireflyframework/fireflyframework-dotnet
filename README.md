@@ -389,21 +389,23 @@ The full schema — verified against the actual `*Options` classes — is in
 
 ```
 fireflyframework-dotnet/
-├── docs/                              Long-form documentation
+├── docs/                              Long-form documentation (start with docs/README.md)
+│   ├── README.md                      Index — recommended reading order
 │   ├── ARCHITECTURE.md                Tier diagram, dependency graph, process model
 │   ├── SERVICE-SCAFFOLDING.md         Canonical 5-project service layout
 │   ├── MIGRATION-GUIDE.md             Java to .NET cookbook
 │   ├── CONFIGURATION.md               Every Firefly:* options section
-│   ├── MODULES.md                     Per-project description with Java mapping
-│   └── AUDIT.md                       Java vs .NET feature parity audit
-├── src/                               Framework projects (foundational → starters)
+│   └── MODULES.md                     Per-project description with Java mapping
+├── src/                               Framework projects, indexed by tier in src/README.md
 ├── samples/                           Reference services in canonical 5-project layout
+│   ├── README.md
 │   ├── FireflyFramework.Samples.OrdersService.Interfaces/
 │   ├── FireflyFramework.Samples.OrdersService.Models/
 │   ├── FireflyFramework.Samples.OrdersService.Core/
 │   ├── FireflyFramework.Samples.OrdersService.Web/
 │   └── FireflyFramework.Samples.OrdersService.Sdk/
-├── tests/FireflyFramework.Tests/      Cross-tier test suite
+├── tests/                             Cross-tier test suite (see tests/README.md)
+│   └── FireflyFramework.Tests/
 ├── Directory.Build.props              Parent build properties (net10.0, version, metadata)
 ├── Directory.Build.targets            Cross-project test wiring
 ├── Directory.Packages.props           Central Package Management — every NuGet pinned
@@ -421,6 +423,8 @@ public surface, options class, and usage examples.
 
 ## Documentation
 
+[`docs/README.md`](docs/README.md) is the recommended starting point — it indexes the doc set and suggests a reading order.
+
 | Document | Purpose |
 |---|---|
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Tier-by-tier reference, dependency-direction graph, process model, versioning policy |
@@ -428,7 +432,8 @@ public surface, options class, and usage examples.
 | [`docs/MIGRATION-GUIDE.md`](docs/MIGRATION-GUIDE.md) | Java → .NET cookbook covering Reactor, Spring DI, web layer, persistence, CQRS, EDA, resilience, observability |
 | [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) | Every `Firefly:*` configuration section with example values |
 | [`docs/MODULES.md`](docs/MODULES.md) | One-line description of every project plus its Java original |
-| [`docs/AUDIT.md`](docs/AUDIT.md) | Java vs .NET feature parity audit |
+
+Per-project READMEs live alongside each project under [`src/`](src) and [`samples/`](samples). [`src/README.md`](src/README.md) indexes them by tier; [`tests/README.md`](tests/README.md) describes the test suite layout.
 
 ---
 
