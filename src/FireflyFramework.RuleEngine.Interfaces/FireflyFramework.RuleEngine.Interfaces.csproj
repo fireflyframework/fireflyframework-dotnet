@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.RuleEngine.Interfaces</RootNamespace>
+    <PackageId>FireflyFramework.RuleEngine.Interfaces</PackageId>
+    <Description>Public DTOs and enums for the rule engine. Mirrors fireflyframework-rule-engine-interfaces.</Description>
+  </PropertyGroup>
+</Project>

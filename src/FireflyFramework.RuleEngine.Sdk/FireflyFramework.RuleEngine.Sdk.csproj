@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.RuleEngine.Sdk</RootNamespace>
+    <PackageId>FireflyFramework.RuleEngine.Sdk</PackageId>
+    <Description>HTTP client SDK for the rule engine. Mirrors fireflyframework-rule-engine-sdk.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.RuleEngine.Interfaces/FireflyFramework.RuleEngine.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.RuleEngine.Web</RootNamespace>
+    <PackageId>FireflyFramework.RuleEngine.Web</PackageId>
+    <Description>ASP.NET Core controllers exposing the rule engine. Mirrors fireflyframework-rule-engine-web.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.RuleEngine.Core/FireflyFramework.RuleEngine.Core.csproj" />
+    <ProjectReference Include="../FireflyFramework.Web/FireflyFramework.Web.csproj" />
+  </ItemGroup>
+</Project>

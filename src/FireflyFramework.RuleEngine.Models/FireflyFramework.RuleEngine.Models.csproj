@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.RuleEngine.Models</RootNamespace>
+    <PackageId>FireflyFramework.RuleEngine.Models</PackageId>
+    <Description>Persistence entities and EF Core repositories for the rule engine. Mirrors fireflyframework-rule-engine-models.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.RuleEngine.Interfaces/FireflyFramework.RuleEngine.Interfaces.csproj" />
+    <ProjectReference Include="../FireflyFramework.Data/FireflyFramework.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+</Project>
