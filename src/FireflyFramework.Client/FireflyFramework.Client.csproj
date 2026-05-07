@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Client</RootNamespace>
+    <PackageId>FireflyFramework.Client</PackageId>
+    <Description>Unified service-client builder for REST/SOAP/gRPC/WebSocket with circuit breaker (Polly), retry, rate limiting, OAuth2/API key/mTLS, request dedup, distributed tracing. Mirrors fireflyframework-client.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../FireflyFramework.Observability/FireflyFramework.Observability.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.Core" />
+    <PackageReference Include="Polly.Extensions" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="System.ServiceModel.Http" />
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>
