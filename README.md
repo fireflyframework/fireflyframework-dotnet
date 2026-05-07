@@ -252,24 +252,34 @@ rm WeatherForecast.cs                      # the template noise we don't need
 
 ### 2. Install the framework
 
-The Firefly packages live on NuGet under the `FireflyFramework.*`
-prefix. The starter meta-package wires the entire infrastructure tier
-(Web, Cache, Observability, EDA, CQRS) in one call, so you only need
-this single `add package` to start:
+The Firefly packages live under the `FireflyFramework.*` prefix on
+**two registries**, depending on the version you want:
+
+| Version channel | Registry | Setup |
+|---|---|---|
+| Stable releases (`26.04.01`) | NuGet.org | None — works out of the box |
+| Pre-release builds (`26.05.01-preview`, `-rc`, …) | GitHub Packages | One-time `nuget.config` + a GitHub PAT with `read:packages` |
+
+The starter meta-package wires the entire infrastructure tier (Web,
+Cache, Observability, EDA, CQRS) in one call, so you only need this
+single `add package` to start:
 
 ```bash
+# Stable release from NuGet.org
 dotnet add package FireflyFramework.Starter.Core
+
+# Or a pre-release from GitHub Packages (after one-time setup; see below)
+dotnet add package FireflyFramework.Starter.Core --version 26.05.01-preview
 ```
+
+For the GitHub Packages path, follow the one-time setup in
+[`docs/INSTALL.md`](docs/INSTALL.md) — it walks through PAT creation,
+the `nuget.config` template, and the CI-friendly auth flow using the
+auto-provided `GITHUB_TOKEN`.
 
 If you want the rule engine, orchestration, or one of the IDP
 adapters, add the corresponding `FireflyFramework.<Module>` package on
 top (every `src/<Module>/README.md` describes its own surface).
-
-> **Note** — the published versions track the Java release line as a
-> calendar version (currently `26.04.01`). The CI/release workflow
-> (`.github/workflows/publish.yml`) pushes every `src/*` project to
-> NuGet.org and GitHub Packages on each tagged release; see
-> [`Releases & publishing`](#releases--publishing) below.
 
 ### 3. Replace `Program.cs`
 
@@ -427,6 +437,7 @@ public surface, options class, and usage examples.
 
 | Document | Purpose |
 |---|---|
+| [`docs/INSTALL.md`](docs/INSTALL.md) | How to install packages from NuGet.org, GitHub Packages, or local project references; one-time `nuget.config` + PAT setup |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Tier-by-tier reference, dependency-direction graph, process model, versioning policy |
 | [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) | The canonical 5-project layout, naming conventions, dependency graph, bootstrap recipe |
 | [`docs/MIGRATION-GUIDE.md`](docs/MIGRATION-GUIDE.md) | Java → .NET cookbook covering Reactor, Spring DI, web layer, persistence, CQRS, EDA, resilience, observability |
