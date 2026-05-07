@@ -8,4 +8,8 @@
   <ItemGroup>
     <ProjectReference Include="../FireflyFramework.Callbacks.Interfaces/FireflyFramework.Callbacks.Interfaces.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
 </Project>

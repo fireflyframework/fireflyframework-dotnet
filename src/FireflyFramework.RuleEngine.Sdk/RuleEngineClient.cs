@@ -3,25 +3,27 @@ using FireflyFramework.RuleEngine.Interfaces;
 
 namespace FireflyFramework.RuleEngine.Sdk;
 
-/// <summary>HTTP client for the Firefly rule engine REST API.</summary>
-public sealed class RuleEngineClient
+public sealed class RuleEngineClient : IRuleEngineClient
 {
     private readonly HttpClient _http;
 
     public RuleEngineClient(HttpClient http) => _http = http;
 
-    public async Task<RulesEvaluationResponseDto?> EvaluateAsync(
-        RulesEvaluationRequestDto request, CancellationToken ct = default)
-    {
-        var resp = await _http.PostAsJsonAsync("api/rules/evaluate/direct", request, ct).ConfigureAwait(false);
-        resp.EnsureSuccessStatusCode();
-        return await resp.Content.ReadFromJsonAsync<RulesEvaluationResponseDto>(cancellationToken: ct).ConfigureAwait(false);
-    }
+    public Task<RulesEvaluationResponseDto?> EvaluateAsync(
+        RulesEvaluationRequestDto request, CancellationToken ct = default) =>
+        PostAsync("api/rules/evaluate/direct", request, ct);
 
-    public async Task<RulesEvaluationResponseDto?> EvaluateByCodeAsync(
-        RuleEvaluationByCodeRequestDto request, CancellationToken ct = default)
+    public Task<RulesEvaluationResponseDto?> EvaluatePlainAsync(
+        PlainYamlEvaluationRequestDto request, CancellationToken ct = default) =>
+        PostAsync("api/rules/evaluate/plain", request, ct);
+
+    public Task<RulesEvaluationResponseDto?> EvaluateByCodeAsync(
+        RuleEvaluationByCodeRequestDto request, CancellationToken ct = default) =>
+        PostAsync("api/rules/evaluate/by-code", request, ct);
+
+    private async Task<RulesEvaluationResponseDto?> PostAsync<T>(string path, T body, CancellationToken ct)
     {
-        var resp = await _http.PostAsJsonAsync("api/rules/evaluate/by-code", request, ct).ConfigureAwait(false);
+        using var resp = await _http.PostAsJsonAsync(path, body, ct).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
         return await resp.Content.ReadFromJsonAsync<RulesEvaluationResponseDto>(cancellationToken: ct).ConfigureAwait(false);
     }

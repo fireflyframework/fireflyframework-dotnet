@@ -142,7 +142,9 @@ backoff retry → timeout.
 | `Polly.Core` + `Microsoft.Extensions.Http.Resilience` | REST resilience    |
 | `System.ServiceModel.Http`                            | SOAP / WCF Core    |
 | `Grpc.Net.Client`                                     | gRPC channel       |
-| `System.Net.Http.Json`                                | JSON typed REST    |
+
+`System.Net.Http.Json` (used by the typed JSON REST helpers) ships in the
+.NET 10 framework — no package import needed.
 
 ## Java mapping
 

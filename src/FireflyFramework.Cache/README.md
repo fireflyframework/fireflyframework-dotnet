@@ -87,7 +87,9 @@ a connection string is configured, Memory otherwise).
 | `FireflyFramework.Kernel`              | Base exception type  |
 | `Microsoft.Extensions.Caching.Memory`  | `MemoryCacheAdapter` |
 | `StackExchange.Redis`                  | `RedisCacheAdapter`  |
-| `System.Text.Json`                     | Default serialiser   |
+
+`System.Text.Json` (used by the default serialiser) ships in the .NET 10
+framework — no package import needed.
 
 ## Java mapping
 

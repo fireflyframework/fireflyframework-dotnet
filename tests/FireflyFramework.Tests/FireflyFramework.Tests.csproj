@@ -38,6 +38,10 @@
     <ProjectReference Include="../../src/FireflyFramework.Starter.Application/FireflyFramework.Starter.Application.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Starter.Domain/FireflyFramework.Starter.Domain.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Starter.Data/FireflyFramework.Starter.Data.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Callbacks.Sdk/FireflyFramework.Callbacks.Sdk.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Webhooks.Sdk/FireflyFramework.Webhooks.Sdk.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.RuleEngine.Sdk/FireflyFramework.RuleEngine.Sdk.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.RuleEngine.Interfaces/FireflyFramework.RuleEngine.Interfaces.csproj" />
   </ItemGroup>
 
   <ItemGroup>

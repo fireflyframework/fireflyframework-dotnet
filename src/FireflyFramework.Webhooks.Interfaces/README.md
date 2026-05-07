@@ -30,9 +30,8 @@ public sealed record WebhookResponseDto(
 
 ## Dependencies
 
-| Reference            | Used for                       |
-|----------------------|--------------------------------|
-| `System.Text.Json`   | `JsonElement` payload type     |
+None — pure DTOs. `System.Text.Json.JsonElement` ships in the .NET 10
+framework reference, so no external package is required.
 
 ## Java mapping
 
