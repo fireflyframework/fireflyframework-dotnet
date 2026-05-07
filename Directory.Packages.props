@@ -1,0 +1,232 @@
+<Project>
+  <!--
+    Central Package Management — .NET equivalent of fireflyframework-bom (Maven BOM).
+    Pinning all NuGet versions in one place ensures consistent dependency graphs across
+    every project, replacing Maven's <dependencyManagement> mechanism.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ASP.NET Core / Microsoft.Extensions -->
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Http" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.0.8" />
+
+    <!-- Data: EF Core 9 (R2DBC equivalent) + ADO providers -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.8" />
+    <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+    <PackageVersion Include="Dapper" Version="2.1.66" />
+    <PackageVersion Include="Npgsql" Version="9.0.2" />
+
+    <!-- Migrations: Flyway equivalent -->
+    <PackageVersion Include="dbup-core" Version="6.0.4" />
+    <PackageVersion Include="dbup-postgresql" Version="6.0.4" />
+    <PackageVersion Include="dbup-mysql" Version="6.0.4" />
+    <PackageVersion Include="dbup-sqlserver" Version="6.0.4" />
+    <PackageVersion Include="FluentMigrator" Version="7.0.0" />
+    <PackageVersion Include="FluentMigrator.Runner" Version="7.0.0" />
+
+    <!-- Caching providers -->
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.16" />
+    <PackageVersion Include="ZiggyCreatures.FusionCache" Version="2.0.0" />
+    <PackageVersion Include="Hazelcast.Net" Version="5.5.1" />
+
+    <!-- Resilience: Resilience4j equivalent = Polly v8 -->
+    <PackageVersion Include="Polly" Version="8.5.0" />
+    <PackageVersion Include="Polly.Core" Version="8.5.0" />
+    <PackageVersion Include="Polly.Extensions" Version="8.5.0" />
+    <PackageVersion Include="Polly.RateLimiting" Version="8.5.0" />
+
+    <!-- Validation: Jakarta Validation equivalents -->
+    <PackageVersion Include="FluentValidation" Version="11.10.0" />
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+
+    <!-- Mapping: MapStruct equivalent -->
+    <PackageVersion Include="Mapster" Version="7.4.0" />
+    <PackageVersion Include="Mapster.DependencyInjection" Version="1.0.1" />
+    <PackageVersion Include="AutoMapper" Version="13.0.1" />
+
+    <!-- DI scanning: @ComponentScan equivalent -->
+    <PackageVersion Include="Scrutor" Version="6.0.1" />
+
+    <!-- Reactive: Reactor Mono/Flux equivalent (where strictly needed) -->
+    <PackageVersion Include="System.Reactive" Version="6.0.1" />
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
+
+    <!-- Serialization -->
+    <PackageVersion Include="System.Text.Json" Version="9.0.8" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Google.Protobuf" Version="3.29.1" />
+    <PackageVersion Include="Google.Protobuf.Tools" Version="3.29.1" />
+    <PackageVersion Include="Apache.Avro" Version="1.12.0" />
+
+    <!-- gRPC -->
+    <PackageVersion Include="Grpc.AspNetCore" Version="2.68.0" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.68.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.69.0" />
+
+    <!-- SOAP/WCF (Apache CXF equivalent) -->
+    <PackageVersion Include="System.ServiceModel.Http" Version="8.1.0" />
+    <PackageVersion Include="System.ServiceModel.Primitives" Version="8.1.0" />
+    <PackageVersion Include="System.ServiceModel.Federation" Version="8.1.0" />
+
+    <!-- Messaging: Kafka + RabbitMQ -->
+    <PackageVersion Include="Confluent.Kafka" Version="2.6.1" />
+    <PackageVersion Include="Confluent.SchemaRegistry" Version="2.6.1" />
+    <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Avro" Version="2.6.1" />
+    <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Protobuf" Version="2.6.1" />
+    <PackageVersion Include="RabbitMQ.Client" Version="7.0.0" />
+    <PackageVersion Include="MassTransit" Version="8.3.4" />
+    <PackageVersion Include="MassTransit.Kafka" Version="8.3.4" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.4" />
+
+    <!-- Observability: OpenTelemetry stack (Micrometer + OpenTelemetry equivalent) -->
+    <PackageVersion Include="OpenTelemetry" Version="1.10.0" />
+    <PackageVersion Include="OpenTelemetry.Api" Version="1.10.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.10.0-beta.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.10.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.10.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.10.0" />
+
+    <!-- Logging: Logback+Logstash equivalent -->
+    <PackageVersion Include="Serilog" Version="4.2.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+
+    <!-- HTTP / WebClient -->
+    <PackageVersion Include="System.Net.Http.Json" Version="9.0.8" />
+
+    <!-- AWS (Java AWS SDK v2 equivalent) -->
+    <PackageVersion Include="AWSSDK.Core" Version="3.7.405.5" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.413.4" />
+    <PackageVersion Include="AWSSDK.SQS" Version="3.7.400.86" />
+    <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="3.7.400.86" />
+    <PackageVersion Include="AWSSDK.Kinesis" Version="3.7.402.86" />
+    <PackageVersion Include="AWSSDK.DynamoDBv2" Version="3.7.405.5" />
+    <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="3.7.402.86" />
+
+    <!-- Azure -->
+    <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
+    <PackageVersion Include="Azure.Identity" Version="1.13.1" />
+    <PackageVersion Include="Azure.Messaging.ServiceBus" Version="7.18.3" />
+    <PackageVersion Include="Microsoft.Identity.Client" Version="4.66.2" />
+    <PackageVersion Include="Microsoft.Graph" Version="5.66.0" />
+
+    <!-- Google Cloud -->
+    <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.21.0" />
+    <PackageVersion Include="Google.Cloud.Storage.V1" Version="4.10.0" />
+    <PackageVersion Include="Firebase.Admin" Version="3.1.0" />
+    <PackageVersion Include="FirebaseAdmin" Version="3.1.0" />
+
+    <!-- Identity Provider integrations -->
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.3.0" />
+    <PackageVersion Include="OpenIddict.AspNetCore" Version="6.0.0" />
+    <PackageVersion Include="Keycloak.Net.Core" Version="1.0.31" />
+
+    <!-- ECM e-signature SDKs -->
+    <PackageVersion Include="DocuSign.eSign.dll" Version="6.10.0" />
+
+    <!-- Notifications providers -->
+    <PackageVersion Include="SendGrid" Version="9.29.3" />
+    <PackageVersion Include="Twilio" Version="7.7.2" />
+
+    <!-- Cryptography -->
+    <PackageVersion Include="BouncyCastle.Cryptography" Version="2.5.0" />
+    <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
+
+    <!-- PDF / Templates (Flying Saucer + FreeMarker equivalent) -->
+    <PackageVersion Include="itext7" Version="9.0.8" />
+    <PackageVersion Include="itext7.bouncy-castle-adapter" Version="9.0.8" />
+    <PackageVersion Include="itext7.pdfhtml" Version="6.2.1" />
+    <PackageVersion Include="Scriban" Version="7.1.0" />
+    <PackageVersion Include="Fluid.Core" Version="2.18.0" />
+
+    <!-- HTTP signature / HMAC helpers -->
+    <PackageVersion Include="HotChocolate.AspNetCore" Version="14.1.0" />
+
+    <!-- WebSockets -->
+    <PackageVersion Include="Microsoft.AspNetCore.WebSockets" Version="2.3.0" />
+
+    <!-- Math / Date / extra -->
+    <PackageVersion Include="NodaTime" Version="3.2.0" />
+    <PackageVersion Include="MathNet.Numerics" Version="5.0.0" />
+
+    <!-- YAML (rule-engine YAML DSL) -->
+    <PackageVersion Include="YamlDotNet" Version="16.2.1" />
+
+    <!-- IronPython for rule-engine Python compilation -->
+    <PackageVersion Include="IronPython" Version="3.4.2" />
+
+    <!-- Plugin / dynamic loading -->
+    <PackageVersion Include="McMaster.NETCore.Plugins" Version="1.4.0" />
+
+    <!-- Spring Cloud Config equivalent -->
+    <PackageVersion Include="Steeltoe.Configuration.ConfigServer" Version="4.0.0" />
+
+    <!-- Reverse proxy (Spring Cloud Gateway equivalent) -->
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
+
+    <!-- Testing: Testcontainers + WireMock equivalents -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
+    <PackageVersion Include="FluentAssertions" Version="7.0.0" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="Testcontainers" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.Kafka" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.1.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.1.0" />
+    <PackageVersion Include="WireMock.Net" Version="1.6.7" />
+    <PackageVersion Include="WireMock.Net.FluentAssertions" Version="1.6.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.8" />
+
+    <!-- SBOM (CycloneDX equivalent) -->
+    <PackageVersion Include="CycloneDX" Version="4.0.2" />
+
+    <!-- Source generators / extras -->
+    <PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

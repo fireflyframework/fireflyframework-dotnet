@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <!-- Framework and language -->
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS1591;CA1707;CA1024;CA1002;CA2007</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Project metadata mirrors fireflyframework-parent -->
+    <Version>26.04.01</Version>
+    <Authors>Firefly Software Foundation</Authors>
+    <Company>Firefly Software Foundation</Company>
+    <Copyright>© 2026 Firefly Software Foundation</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://fireflyframework.org</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fireflyframework/fireflyframework-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>firefly;cqrs;eda;saga;event-sourcing;reactive;dotnet</PackageTags>
+
+    <!-- Package generation -->
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>portable</DebugType>
+
+    <!-- Code analysis -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)' == 'true'">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+</Project>
