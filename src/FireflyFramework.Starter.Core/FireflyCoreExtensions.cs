@@ -3,6 +3,7 @@ using FireflyFramework.Cqrs.DependencyInjection;
 using FireflyFramework.Eda.DependencyInjection;
 using FireflyFramework.Observability.DependencyInjection;
 using FireflyFramework.Web.DependencyInjection;
+using FireflyFramework.Web.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,7 @@ public static class FireflyCoreExtensions
         string serviceVersion = "1.0.0",
         params System.Reflection.Assembly[] cqrsAssemblies)
     {
+        FireflyBanner.Print(typeof(FireflyCoreExtensions).Assembly, serviceName, serviceVersion);
         services.AddFireflyWeb(config);
         services.AddFireflyObservability(config, serviceName, serviceVersion);
         services.AddFireflyCache(config);

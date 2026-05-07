@@ -9,4 +9,8 @@
     <ProjectReference Include="../FireflyFramework.Starter.Core/FireflyFramework.Starter.Core.csproj" />
     <ProjectReference Include="../FireflyFramework.EventSourcing/FireflyFramework.EventSourcing.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/banner.txt" />
+  </ItemGroup>
 </Project>

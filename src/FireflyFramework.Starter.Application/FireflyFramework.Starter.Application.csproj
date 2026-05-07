@@ -16,4 +16,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/banner.txt" />
+  </ItemGroup>
 </Project>

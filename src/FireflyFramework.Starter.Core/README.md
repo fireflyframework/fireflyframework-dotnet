@@ -27,6 +27,10 @@ await app.RunAsync();
 
 `AddFireflyCore` calls:
 
+- Prints the embedded `Resources/banner.txt` (the `firefly-core` banner)
+  to `stdout` once on startup — mirroring the Spring Boot banner-on-start
+  behaviour. ANSI colors are emitted only on a TTY and only when
+  `NO_COLOR` is unset.
 - `AddFireflyWeb`           — RFC 7807 problem-details middleware,
                               idempotency, correlation, PII masking
 - `AddFireflyObservability` — OpenTelemetry traces / metrics, Serilog

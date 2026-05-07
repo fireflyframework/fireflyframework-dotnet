@@ -20,4 +20,8 @@
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.RateLimiting" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/banner.txt" />
+  </ItemGroup>
 </Project>
