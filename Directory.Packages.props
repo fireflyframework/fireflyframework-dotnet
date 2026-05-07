@@ -137,6 +137,7 @@
     <!-- Transitive pins addressing security advisories surfaced via NU1902/NU1903 -->
     <PackageVersion Include="System.Security.Cryptography.Xml" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Kiota.Abstractions" Version="2.0.0" />
+    <PackageVersion Include="System.Linq.Dynamic.Core" Version="1.7.2" />
 
     <!-- AWS (Java AWS SDK v2 equivalent) -->
     <PackageVersion Include="AWSSDK.Core" Version="3.7.500" />
