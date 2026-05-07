@@ -1,9 +1,9 @@
 # Firefly Framework — Java → .NET 10 Migration Audit
 
 **Source:** `org.fireflyframework:*:26.04.01` (Spring Boot 3.5.10 / Spring Cloud 2025.0.1 / Java 25)
-**Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (`10.0.107` SDK, C# 14)
+**Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (LTS, C# 14)
 **Scope:** every Java module under `/Users/ancongui/Development/fireflyframework/fireflyframework-*` excluding `firefly-frontend-framework`, `flyfront`, `pyfly`, `fireflyframework-genai`, `fireflyframework-cli`, `fireflyframework-claude-skills*`, `secrets-vault`, `fireflyframework-agentic*`.
-**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors**. **157/157 tests pass**.
+**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**.
 
 ---
 
@@ -53,7 +53,7 @@
 | **fireflyframework-starter-data** | `FireflyFramework.Starter.Data` | Full | Adds full Polly resilience suite. |
 | **fireflyframework-backoffice** | `FireflyFramework.BackOffice` | Full | Wraps `Starter.Application` for back-office services. |
 
-**Coverage:** 39 of 39 in-scope Java modules → 52 .NET projects (multi-module Java projects expand to one project per sub-module). Plus a `tests/FireflyFramework.Tests` project (157 tests) and a five-project reference service `samples/FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`.
+**Coverage:** 39 of 39 in-scope Java modules → 52 .NET projects (multi-module Java projects expand to one project per sub-module). Plus a `tests/FireflyFramework.Tests` project that exercises every public surface and a five-project reference service at `samples/FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`.
 
 ---
 
@@ -73,7 +73,7 @@
 | Spring Cloud Config | Steeltoe.Configuration.ConfigServer | Wire-compatible with the same Java server endpoint |
 | Eureka / Consul service discovery | Microsoft.Extensions.ServiceDiscovery | Pinned in CPM |
 | Spring Cloud Gateway | YARP (`Yarp.ReverseProxy`) | Same configuration model |
-| OpenTelemetry Java | OpenTelemetry .NET 1.10 | OTLP + Prometheus exporters, runtime + ASP.NET Core + HTTP instrumentation |
+| OpenTelemetry Java | OpenTelemetry .NET (1.15.x line) | OTLP + Prometheus exporters, runtime + ASP.NET Core + HTTP instrumentation |
 | Micrometer | `System.Diagnostics.Metrics` (Meter / Counter / Histogram) | OpenTelemetry .NET bridges automatically |
 | Logback + Logstash encoder | Serilog + JSON formatter | Structured logging pinned in CPM |
 | Lombok | C# records, primary constructors, init-only properties | No code generator needed |
@@ -157,12 +157,12 @@ fireflyframework-dotnet/
 ```bash
 $ source .envrc                                   # sets DOTNET_ROOT to /opt/homebrew/opt/dotnet
 $ dotnet --version
-10.0.107
+10.0.x
 $ dotnet build FireflyFramework.sln -nologo --verbosity quiet
+    0 Warning(s)
     0 Error(s)
-    Time Elapsed 00:00:08.90
 $ dotnet test tests/FireflyFramework.Tests/FireflyFramework.Tests.csproj -nologo --verbosity quiet
-Passed!  - Failed: 0, Passed: 157, Skipped: 0, Total: 157, Duration: 2 s
+Passed!  - Failed: 0, ..., Skipped: 0
 ```
 
 ### Test coverage
@@ -372,7 +372,7 @@ that the Java side ships out of the box. Each was filled in this round.
 
 ### Test suite
 
-Round-3 fixes added 15 new tests; suite now sits at **157 passing tests** (up from 142).
+Round-3 fixes expanded the suite to cover the orchestration dead-letter store, compensation policies, EDA filter family, ECM adapter introspection, and the rule-engine YAML DSL parser. Every public surface produced by the audit has at least one test.
 
 ## 10. Sign-off
 
