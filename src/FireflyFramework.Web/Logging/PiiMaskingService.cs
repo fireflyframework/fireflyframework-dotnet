@@ -123,6 +123,10 @@ public sealed class PiiMaskingService
             return value;
         }
 
+        // Keep a configurable prefix and suffix visible (e.g. "12**********34")
+        // so a human troubleshooting a log can still recognise the value while
+        // the body remains redacted. We clamp to the input length so a short
+        // value with VisiblePrefix > value.Length doesn't throw.
         var keepStart = Math.Min(_options.VisiblePrefix, value.Length);
         var keepEnd = Math.Min(_options.VisibleSuffix, Math.Max(value.Length - keepStart, 0));
         var maskLength = Math.Max(value.Length - keepStart - keepEnd, 0);

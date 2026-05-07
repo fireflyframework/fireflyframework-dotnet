@@ -73,11 +73,17 @@ public sealed class EventDrivenCacheInvalidator : IEventDrivenCacheInvalidator
     public async Task OnEventAsync(object @event, CancellationToken ct = default)
     {
         var type = @event.GetType();
+        // No registrations for this event type? Nothing to do — most events
+        // don't invalidate any cache, so a hash lookup is the right
+        // optimisation. We exit before touching any state.
         if (!_registrations.TryGetValue(type, out var patterns))
         {
             return;
         }
 
+        // One event can invalidate multiple cache patterns (e.g. an
+        // OrderShipped event clears both order:{id}:* and customer:{id}:orders:*
+        // because both projections derive from the same source aggregate).
         foreach (var pattern in patterns)
         {
             _log.LogDebug("Invalidating CQRS cache (event={Event}, pattern={Pattern})", type.Name, pattern ?? "<all>");

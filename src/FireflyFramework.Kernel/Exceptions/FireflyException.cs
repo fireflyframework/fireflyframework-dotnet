@@ -54,6 +54,11 @@ public class FireflyException : Exception
         : base(message, cause)
     {
         ErrorCode = string.IsNullOrEmpty(errorCode) ? DefaultErrorCode : errorCode;
+        // Defensive copy: callers often pass the same dictionary they later
+        // mutate (e.g. a request-scoped context bag). Without copying, that
+        // mutation would leak into already-thrown exceptions and confuse log
+        // analysis. The cost is one allocation per throw — acceptable on
+        // a path that is by definition exceptional.
         Context = context is null
             ? new Dictionary<string, object?>()
             : new Dictionary<string, object?>(context);
