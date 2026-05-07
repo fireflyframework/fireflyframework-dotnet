@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Notifications.Core</RootNamespace>
+    <PackageId>FireflyFramework.Notifications.Core</PackageId>
+    <Description>Notification application services: EmailService, SmsService, PushService, template engine. Mirrors fireflyframework-notifications-core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Notifications/FireflyFramework.Notifications.csproj" />
+    <ProjectReference Include="../FireflyFramework.Utils/FireflyFramework.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Scriban" />
+  </ItemGroup>
+</Project>

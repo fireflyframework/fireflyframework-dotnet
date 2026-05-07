@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Notifications.SendGrid</RootNamespace>
+    <PackageId>FireflyFramework.Notifications.SendGrid</PackageId>
+    <Description>SendGrid email provider adapter. Mirrors fireflyframework-notifications-sendgrid.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Notifications/FireflyFramework.Notifications.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="SendGrid" />
+  </ItemGroup>
+</Project>
