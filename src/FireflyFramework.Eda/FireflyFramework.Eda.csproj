@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Eda</RootNamespace>
+    <PackageId>FireflyFramework.Eda</PackageId>
+    <Description>Event-driven architecture: unified publisher/consumer abstraction over Kafka/RabbitMQ with JSON/Protobuf/Avro serializers, DLQ, circuit breaker, filters. Mirrors fireflyframework-eda.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../FireflyFramework.Observability/FireflyFramework.Observability.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Confluent.Kafka" />
+    <PackageReference Include="Confluent.SchemaRegistry" />
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" />
+    <PackageReference Include="Confluent.SchemaRegistry.Serdes.Protobuf" />
+    <PackageReference Include="RabbitMQ.Client" />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.Core" />
+    <PackageReference Include="Apache.Avro" />
+    <PackageReference Include="Google.Protobuf" />
+  </ItemGroup>
+</Project>
