@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Webhooks.Sdk</RootNamespace>
+    <PackageId>FireflyFramework.Webhooks.Sdk</PackageId>
+    <Description>HTTP SDK for the webhook ingestion API. Mirrors fireflyframework-webhooks-sdk.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Webhooks.Interfaces/FireflyFramework.Webhooks.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>

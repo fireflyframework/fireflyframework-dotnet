@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Webhooks.Web</RootNamespace>
+    <PackageId>FireflyFramework.Webhooks.Web</PackageId>
+    <Description>Webhook ingestion controller. Mirrors fireflyframework-webhooks-web.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Webhooks.Core/FireflyFramework.Webhooks.Core.csproj" />
+  </ItemGroup>
+</Project>

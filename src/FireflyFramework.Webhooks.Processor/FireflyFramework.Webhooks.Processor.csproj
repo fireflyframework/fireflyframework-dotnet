@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Webhooks.Processor</RootNamespace>
+    <PackageId>FireflyFramework.Webhooks.Processor</PackageId>
+    <Description>Pluggable webhook processor pipeline (signature validation, idempotency). Mirrors fireflyframework-webhooks-processor.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Webhooks.Interfaces/FireflyFramework.Webhooks.Interfaces.csproj" />
+    <ProjectReference Include="../FireflyFramework.Cache/FireflyFramework.Cache.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>

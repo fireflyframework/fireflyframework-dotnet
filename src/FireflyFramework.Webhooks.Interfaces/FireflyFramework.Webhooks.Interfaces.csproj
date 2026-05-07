@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Webhooks.Interfaces</RootNamespace>
+    <PackageId>FireflyFramework.Webhooks.Interfaces</PackageId>
+    <Description>Webhook public DTOs. Mirrors fireflyframework-webhooks-interfaces.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" />
+  </ItemGroup>
+</Project>
