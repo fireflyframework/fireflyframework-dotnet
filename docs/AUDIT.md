@@ -3,7 +3,7 @@
 **Source:** `org.fireflyframework:*:26.04.01` (Spring Boot 3.5.10 / Spring Cloud 2025.0.1 / Java 25)
 **Target:** `FireflyFramework.*` 26.04.01 on .NET 10 (LTS, C# 14)
 **Scope:** every Java module under `/Users/ancongui/Development/fireflyframework/fireflyframework-*` excluding `firefly-frontend-framework`, `flyfront`, `pyfly`, `fireflyframework-genai`, `fireflyframework-cli`, `fireflyframework-claude-skills*`, `secrets-vault`, `fireflyframework-agentic*`.
-**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**, and the test project ships **327 passing tests** that exercise every concrete adapter the framework ships against the real protocol it speaks (HTTP request shape via WireMock, SDK request shape via NSubstitute) plus the bundled client / orchestration extras.
+**Result:** 52 .NET source projects + 1 test project + 5 sample microservice projects (57 in the solution). Solution builds cleanly with **0 errors, 0 warnings**, and the test project ships **346 passing tests** that exercise every concrete adapter the framework ships against the real protocol it speaks (HTTP request shape via WireMock, SDK request shape via NSubstitute) plus the bundled client / orchestration extras.
 
 ---
 
@@ -147,7 +147,7 @@ fireflyframework-dotnet/
 │   ├── FireflyFramework.Starter.{Core,Application,Domain,Data}
 │   └── FireflyFramework.BackOffice
 └── tests/
-    └── FireflyFramework.Tests/        # 327 tests across the framework — 327/327 passing
+    └── FireflyFramework.Tests/        # 346 tests across the framework — 346/346 passing
 ```
 
 ---
@@ -231,8 +231,11 @@ The bundled extras ported in PR #12 + #13 (service discovery, load balancing, OA
 | `WorkflowRegistry` | 6 | Behavioural |
 | `WorkflowLifecycleService` | 6 | State-machine guards over `InMemoryPersistenceProvider` |
 | `GraphQLClient` | 5 | WireMock GraphQL endpoint |
+| `EurekaServiceDiscoveryClient` | 6 | WireMock — GET 200/404, register POST, deregister DELETE, fall-back endpoint |
+| `ConsulServiceDiscoveryClient` | 7 | WireMock — success / address-fallback / non-passing check / 5xx, register / deregister |
+| `KubernetesServiceDiscoveryClient` | 6 | Behavioural — DNS construction, ctor validation |
 
-| **Total** | **327 / 327 passed** | |
+| **Total** | **346 / 346 passed** | |
 
 Build: `dotnet build FireflyFramework.sln` reports **0 errors / 0 warnings**, with all NU1903 advisories pinned out (`System.Linq.Dynamic.Core` 1.7.2, `System.Security.Cryptography.Xml` 10.0.7, `Microsoft.Kiota.Abstractions` 2.0.0).
 
@@ -256,7 +259,7 @@ The framework is consumable today. Every concrete adapter the framework ships ha
 - **Hot-reload plugin loading** — `McMaster.NETCore.Plugins` is pinned; current `DefaultPluginManager` uses `Activator.CreateInstance`, which is sufficient for in-process plugins but not for hot-reload from external assemblies. Effort: ~½ day.
 - **Webhook HMAC validators** — the SPI is in place (`IWebhookSignatureValidator`); per-provider HMAC schemes (Stripe, Twilio, GitHub) are left to consumer applications.
 - ~~**Orchestration extras**~~ — ported in PR #12, #13 and **#15**. `Recovery/RecoveryService`, `Topology/TopologyBuilder` + `TopologyGraphGenerator` (Graphviz / Mermaid / PlantUML output), `Workflow/WorkflowQueryService`, `Workflow/SearchAttributeProjection`, `Workflow/WorkflowRegistry`, `Workflow/WorkflowLifecycleService`, `Scheduling/IOrchestrationScheduler` + `OrchestrationScheduler` (Cronos-backed cron / fixed-rate / fixed-delay), `Web/OrchestrationController`, `Web/DeadLetterController`, `Web/WorkflowController`.
-- ~~**Client extras**~~ — ported in PR #12, #13 and **#15**. `Discovery/IServiceDiscoveryClient` + `StaticServiceDiscoveryClient`, six `LoadBalancer/ILoadBalancerStrategy` implementations, `OAuth2/OAuth2TokenCache`, `Deduplication/RequestDeduplicator`, `Metrics/ServiceClientMetrics`, `Chaos/ChaosEngineeringHandler` + `FaultInjectionConfig`, `Health/ServiceClientHealthManager`, `GraphQL/GraphQLClient`. Eureka / Consul / Kubernetes service-discovery clients remain deferred — `Microsoft.Extensions.ServiceDiscovery` (already pinned) covers DNS-based discovery for most consumer applications.
+- ~~**Client extras**~~ — ported in PR #12, #13, #15 and **#17**. `Discovery/IServiceDiscoveryClient` + `StaticServiceDiscoveryClient` + `EurekaServiceDiscoveryClient` + `ConsulServiceDiscoveryClient` + `KubernetesServiceDiscoveryClient`, six `LoadBalancer/ILoadBalancerStrategy` implementations, `OAuth2/OAuth2TokenCache`, `Deduplication/RequestDeduplicator`, `Metrics/ServiceClientMetrics`, `Chaos/ChaosEngineeringHandler` + `FaultInjectionConfig`, `Health/ServiceClientHealthManager`, `GraphQL/GraphQLClient`. Every Java client extra now has a .NET counterpart with real-shape tests.
 
 ### 6.2 Resolved since prior revisions
 
