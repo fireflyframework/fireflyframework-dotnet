@@ -1,6 +1,6 @@
 # FireflyFramework.Web
 
-ASP.NET Core 9 middleware and types for RFC 7807 problem-detail
+ASP.NET Core 10 middleware and types for RFC 7807 problem-detail
 responses, idempotent writes, PII masking, and a complete typed
 business-exception hierarchy. Mirrors `org.fireflyframework:firefly-web`
 plus `firefly-spring-utils`.

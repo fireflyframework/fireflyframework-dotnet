@@ -25,7 +25,7 @@ Firefly platform (e.g. `core-banking-accounts`, `core-banking-cards`,
 | `.Interfaces`  | Public DTOs, request/response records, enums. The wire contract.                               | `Microsoft.NET.Sdk`      | `*-interfaces` Maven module |
 | `.Models`      | Persistence entities + repository contracts. The storage contract.                             | `Microsoft.NET.Sdk`      | `*-models` Maven module     |
 | `.Core`        | Commands, queries, handlers, mappers, business services. The rules.                            | `Microsoft.NET.Sdk`      | `*-core` Maven module       |
-| `.Web`         | Runnable ASP.NET Core 9 host: `Program.cs`, controllers / minimal-API endpoints, `appsettings`.| `Microsoft.NET.Sdk.Web`  | `*-web` (Spring Boot) module |
+| `.Web`         | Runnable ASP.NET Core 10 host: `Program.cs`, controllers / minimal-API endpoints, `appsettings`.| `Microsoft.NET.Sdk.Web`  | `*-web` (Spring Boot) module |
 | `.Sdk`         | Typed `HttpClient` for in-process callers. References only `.Interfaces`.                      | `Microsoft.NET.Sdk`      | `*-sdk` Maven module        |
 
 ## The dependency graph

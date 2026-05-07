@@ -1,8 +1,9 @@
-# Firefly Framework — .NET 9
+# Firefly Framework — .NET 10
 
-A complete .NET 9 port of the Java/Spring Boot Firefly Framework
+A complete .NET 10 port of the Java/Spring Boot Firefly Framework
 (`org.fireflyframework:*:26.04.01`). Same contracts, same starter pattern,
-same calendar version — re-implemented with idiomatic .NET tooling.
+same calendar version — re-implemented with idiomatic .NET tooling on the
+LTS .NET 10 runtime (C# 14).
 
 The repository ships **52 NuGet-publishable projects** organised into four
 tiers (foundational, platform, adapters, starters), backed by **157 xUnit
@@ -24,13 +25,13 @@ same way as its Java siblings and produces the same wire format.
 
 ## Requirements
 
-- .NET 9 SDK (`9.0.100` or later). Verified against `9.0.115`.
+- .NET 10 SDK (`10.0.100` or later). Verified against `10.0.107`.
 - Apache-2.0 licence.
 
 ```bash
-brew install dotnet@9          # macOS — or any official .NET 9 installer
-source .envrc                  # exports DOTNET_ROOT and prepends dotnet@9 to PATH
-dotnet --version               # expect 9.0.x
+brew install dotnet            # macOS — or any official .NET 10 installer
+source .envrc                  # exports DOTNET_ROOT and prepends dotnet to PATH
+dotnet --version               # expect 10.0.x
 ```
 
 ## Build, test, run
@@ -65,8 +66,8 @@ fireflyframework-dotnet/
 ├── Directory.Packages.props           Central Package Management
 ├── FireflyFramework.sln               Solution file (57 projects, 7 folders)
 ├── NuGet.config                       Pins nuget.org as the only source
-├── global.json                        Pins .NET SDK 9.0
-├── .envrc                             Sources dotnet@9 into PATH
+├── global.json                        Pins .NET SDK 10.0
+├── .envrc                             Sources dotnet (10.x) into PATH
 └── LICENSE                            Apache-2.0
 ```
 
@@ -87,7 +88,7 @@ fireflyframework-dotnet/
 |---------------------------------------------------------------|------------------------------------------------------------------------|
 | `FireflyFramework.Cache`                                      | `ICacheAdapter` port, Memory/Redis/Noop adapters, primary/fallback     |
 | `FireflyFramework.Observability`                              | OpenTelemetry .NET (traces/metrics/logs) + Serilog                     |
-| `FireflyFramework.Data`                                       | EF Core 9, filter DSL, pagination, soft-delete contract                |
+| `FireflyFramework.Data`                                       | EF Core 10, filter DSL, pagination, soft-delete contract                |
 | `FireflyFramework.Cqrs`                                       | Command/query buses, fluent dispatch, query cache, event-driven invalidation |
 | `FireflyFramework.Eda`                                        | Kafka + RabbitMQ + InMemory, Schema Registry, filters, error handlers, resilient publisher |
 | `FireflyFramework.EventSourcing`                              | Aggregates, snapshots, outbox, projections, upcasters                  |
@@ -134,7 +135,7 @@ the multi-module Maven layout used by Java services in the platform):
 | `.Interfaces`  | Public DTOs and enums — the wire contract                              |
 | `.Models`      | Persistence entities + repository contracts                            |
 | `.Core`        | Commands, queries, handlers, mappers, business services                |
-| `.Web`         | Runnable ASP.NET Core 9 host                                           |
+| `.Web`         | Runnable ASP.NET Core 10 host                                           |
 | `.Sdk`         | Typed `HttpClient` for in-process callers                              |
 
 See [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) for the

@@ -1,7 +1,7 @@
 # Java → .NET Migration Cookbook
 
 > Side-by-side reference for engineers porting a Java/Spring Boot
-> Firefly service to the .NET 9 stack.
+> Firefly service to the .NET 10 stack.
 
 ## 1. Project layout
 
@@ -53,7 +53,7 @@
 
 ## 5. Web layer
 
-| Spring MVC / WebFlux                                  | ASP.NET Core 9                                            |
+| Spring MVC / WebFlux                                  | ASP.NET Core 10                                            |
 |-------------------------------------------------------|-----------------------------------------------------------|
 | `@RestController`                                     | `app.MapGet/Post/...` (minimal API) or `Controller`       |
 | `@RequestMapping("/users")`                           | `app.MapGroup("/users")`                                  |
@@ -67,7 +67,7 @@
 
 ## 6. Persistence
 
-| Spring Data R2DBC                              | EF Core 9                                                |
+| Spring Data R2DBC                              | EF Core 10                                                |
 |------------------------------------------------|----------------------------------------------------------|
 | `R2dbcRepository<T, Id>`                       | `DbContext` + `DbSet<T>`                                 |
 | `@Table` / `@Id` / `@Column`                   | Same names — `[Table]` / `[Key]` / `[Column]`            |
@@ -176,7 +176,7 @@ builder.Services
     .AddFireflyApplication(typeof(Program).Assembly)  // CQRS + EDA + RuleEngine + Plugins
     .AddFireflyData<OrdersDbContext>(builder.Configuration); // EF Core
 
-builder.Services.AddOpenApi();   // .NET 9 OpenAPI
+builder.Services.AddOpenApi();   // .NET 10 OpenAPI
 
 var app = builder.Build();
 app.UseFireflyMiddleware();      // problem-details, correlation-id, idempotency

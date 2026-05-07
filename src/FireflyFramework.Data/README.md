@@ -2,7 +2,7 @@
 
 Async data-access primitives — pagination, generic filtering, base
 entity contract, repository abstraction. Mirrors
-`org.fireflyframework:firefly-r2dbc` but built on EF Core 9 since EF is
+`org.fireflyframework:firefly-r2dbc` but built on EF Core 10 since EF is
 the .NET standard for typed persistence.
 
 The application supplies its own `DbContext`; this module supplies the

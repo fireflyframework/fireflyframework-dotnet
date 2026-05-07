@@ -8,8 +8,4 @@
   <ItemGroup>
     <ProjectReference Include="../FireflyFramework.Callbacks.Interfaces/FireflyFramework.Callbacks.Interfaces.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" />
-  </ItemGroup>
 </Project>

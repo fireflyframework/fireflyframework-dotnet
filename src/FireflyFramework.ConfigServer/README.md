@@ -1,6 +1,6 @@
 # FireflyFramework.ConfigServer
 
-Standalone ASP.NET Core 9 host that serves a configuration endpoint
+Standalone ASP.NET Core 10 host that serves a configuration endpoint
 compatible with the Spring Cloud Config "native" protocol. Java clients
 and Steeltoe-based .NET clients can both consume it, so a single config
 server can sit in front of services on either platform.

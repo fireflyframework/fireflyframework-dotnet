@@ -2,12 +2,12 @@
 
 ## Build prerequisites
 
-- .NET 9 SDK (`brew install dotnet@9` on macOS, see <https://dotnet.microsoft.com/download/dotnet/9.0>)
+- .NET 10 SDK (`brew install dotnet` on macOS, see <https://dotnet.microsoft.com/download/dotnet/10.0>)
 - A POSIX shell — sourcing `.envrc` exports `DOTNET_ROOT` and adds the SDK to your `PATH`
 
 ```bash
 source .envrc
-dotnet --version  # 9.0.x
+dotnet --version  # 10.0.x
 ```
 
 ## Build & test
@@ -21,16 +21,16 @@ dotnet test  tests/FireflyFramework.Tests/FireflyFramework.Tests.csproj
 
 ```
 fireflyframework-dotnet/
-├── Directory.Build.props        # parent properties (net9.0, language version, package metadata)
+├── Directory.Build.props        # parent properties (net10.0, language version, package metadata)
 ├── Directory.Packages.props     # central package management = .NET equivalent of fireflyframework-bom
 ├── Directory.Build.targets      # cross-project targets (test framework refs etc.)
-├── FireflyFramework.sln         # 53 projects (52 src + tests + sample)
-├── global.json                  # pins .NET 9 SDK
-├── .envrc                       # `source` it to expose Homebrew dotnet@9
-├── docs/                        # AUDIT.md and migration documentation
+├── FireflyFramework.sln         # 57 projects (52 src + tests + 5 sample modules)
+├── global.json                  # pins .NET 10 SDK
+├── .envrc                       # `source` it to expose Homebrew dotnet
+├── docs/                        # AUDIT, ARCHITECTURE, SERVICE-SCAFFOLDING, etc.
 ├── src/                         # 52 framework projects, one per Java module / sub-module
-├── tests/                       # xUnit suites (61 tests passing)
-├── samples/                     # runnable sample microservice
+├── tests/                       # xUnit suites (157 tests passing)
+├── samples/                     # five-project reference microservice
 └── .github/workflows/ci.yml     # GitHub Actions: build, test, pack
 ```
 
@@ -44,7 +44,7 @@ fireflyframework-dotnet/
 
 ## Conventions
 
-- `net9.0` only; nullable reference types enabled; implicit usings on
+- `net10.0` only (LTS, C# 14); nullable reference types enabled; implicit usings on
 - File-scoped namespaces; primary constructors where natural; records for DTOs
 - One Java `org.fireflyframework.*` package family ↔ one `FireflyFramework.*` project (sub-modules become `FireflyFramework.Module.SubModule`)
 - Configuration sections follow `Firefly:<Module>:…`

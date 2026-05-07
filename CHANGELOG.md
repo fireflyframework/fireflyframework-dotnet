@@ -4,7 +4,7 @@ All notable changes to FireflyFramework.NET.
 
 ## [26.04.01] — 2026-05-07
 
-### Added — initial .NET 9 port from `org.fireflyframework:*:26.04.01`
+### Added — initial .NET 10 port from `org.fireflyframework:*:26.04.01`
 
 #### Foundational layer
 - **Kernel** — `OperationResult<T>`, `ProblemDetail`, `IClock`, `FireflyException`
@@ -15,7 +15,7 @@ All notable changes to FireflyFramework.NET.
 #### Platform
 - **Cache** — `ICacheAdapter` port + Memory / Redis / Noop adapters + `FireflyCacheManager` (primary + fallback)
 - **Observability** — OpenTelemetry .NET (tracing / metrics / logs), Serilog enrichers
-- **Data** — EF Core 9 with InMemory + Postgres + SqlServer providers, generic filter DSL, pagination types, base-entity / soft-delete contracts
+- **Data** — EF Core 10 with InMemory + Postgres + SqlServer providers, generic filter DSL, pagination types, base-entity / soft-delete contracts
 - **CQRS** — Command + Query buses with handler discovery, fluent `For()` API, validation, authorization, query result caching, `EventDrivenCacheInvalidator`
 - **EDA** — Kafka publisher / consumer (with manual offset commit + Schema Registry Avro & Protobuf), RabbitMQ publisher / consumer, in-memory bus, event filter family (composite / type / destination / header), pluggable error handlers, `ResilientEventPublisher` with Polly pipeline
 - **EventSourcing** — `AggregateRoot` with optimistic concurrency, `IEventStore` (in-memory + EF Core), snapshots, transactional outbox + `EventOutboxProcessor`, projections + `ProjectionRunner`, event upcasting
@@ -41,7 +41,7 @@ All notable changes to FireflyFramework.NET.
 
 #### Tooling
 - `Directory.Packages.props` — Central Package Management (Maven BoM analogue) pinning every NuGet
-- `Directory.Build.props` — Parent properties (`net9.0`, calendar version `26.04.01`)
+- `Directory.Build.props` — Parent properties (`net10.0`, calendar version `26.04.01`)
 - xUnit test project with **157 passing tests** across every tier
 - Sample microservice in the canonical five-project layout
   (`samples/FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`)
@@ -60,5 +60,10 @@ All notable changes to FireflyFramework.NET.
 
 ### Notes
 - Calendar version pinned to the Java release line (`26.04.01`).
-- Targets `net9.0`. Built and tested with .NET SDK `9.0.115`.
-- No stubs: every public method either has a real implementation or throws `NotSupportedException` with an actionable message documenting why the underlying provider does not support it.
+- Targets `net10.0` (LTS). Built and tested with .NET SDK `10.0.107`.
+  Language version `latest` (C# 14).
+- `System.Net.Http.Json` is provided by the .NET 10 framework reference — no
+  package import needed.
+- No stubs: every public method either has a real implementation or throws
+  `NotSupportedException` with an actionable message documenting why the
+  underlying provider does not support it.
