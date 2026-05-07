@@ -6,6 +6,7 @@ recommended starting point.
 
 | Document | Audience | What it covers |
 |---|---|---|
+| [`INSTALL.md`](INSTALL.md) | Anyone consuming the packages | Installing from NuGet.org (stable) vs. GitHub Packages (pre-release) vs. local project references; one-time `nuget.config` template; PAT creation; CI authentication. |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Anyone integrating with the framework | The four-tier layering (Foundational → Platform → Adapters → Starters), inter-project dependency direction, the process model the runtime assumes, and the framework's versioning policy. |
 | [`MODULES.md`](MODULES.md) | Anyone picking which package(s) to install | One-line description of every `src/*` project paired with its Java original, organised by tier. The "what's in this package" reference. |
 | [`SERVICE-SCAFFOLDING.md`](SERVICE-SCAFFOLDING.md) | Service authors building on the framework | The canonical five-project layout (`.Interfaces` / `.Models` / `.Core` / `.Web` / `.Sdk`), naming conventions, dependency graph, and a step-by-step bootstrap recipe modelled on the Orders sample. |
@@ -16,10 +17,11 @@ recommended starting point.
 
 If you're new to the framework, read in this order:
 
-1. **[`ARCHITECTURE.md`](ARCHITECTURE.md)** — orient on the layering model and the dependency direction. Five minutes.
-2. **[`SERVICE-SCAFFOLDING.md`](SERVICE-SCAFFOLDING.md)** — see what a real service looks like end-to-end before reading individual module docs. Ten minutes.
-3. **[`MODULES.md`](MODULES.md)** — skim the catalogue; bookmark the modules you'll use.
-4. **[`CONFIGURATION.md`](CONFIGURATION.md)** — keep open while wiring up your `appsettings.json`.
+1. **[`INSTALL.md`](INSTALL.md)** — get the packages resolving in your project. Two minutes.
+2. **[`ARCHITECTURE.md`](ARCHITECTURE.md)** — orient on the layering model and the dependency direction. Five minutes.
+3. **[`SERVICE-SCAFFOLDING.md`](SERVICE-SCAFFOLDING.md)** — see what a real service looks like end-to-end before reading individual module docs. Ten minutes.
+4. **[`MODULES.md`](MODULES.md)** — skim the catalogue; bookmark the modules you'll use.
+5. **[`CONFIGURATION.md`](CONFIGURATION.md)** — keep open while wiring up your `appsettings.json`.
 
 If you're porting an existing Java service, start with [`MIGRATION-GUIDE.md`](MIGRATION-GUIDE.md) instead.
 
