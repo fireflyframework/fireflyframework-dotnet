@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Utils</RootNamespace>
+    <PackageId>FireflyFramework.Utils</PackageId>
+    <Description>Template rendering, PDF generation, and filtering markers. Mirrors fireflyframework-utils. Uses Scriban (FreeMarker analogue) and iText7 (Flying Saucer analogue).</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Scriban" />
+    <PackageReference Include="itext7" />
+    <PackageReference Include="itext7.bouncy-castle-adapter" />
+    <PackageReference Include="itext7.pdfhtml" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>
