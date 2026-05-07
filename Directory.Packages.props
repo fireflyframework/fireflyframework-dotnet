@@ -198,6 +198,9 @@
     <PackageVersion Include="NodaTime" Version="3.2.0" />
     <PackageVersion Include="MathNet.Numerics" Version="5.0.0" />
 
+    <!-- Cron expressions (orchestration scheduler) -->
+    <PackageVersion Include="Cronos" Version="0.13.0" />
+
     <!-- YAML (rule-engine YAML DSL) -->
     <PackageVersion Include="YamlDotNet" Version="16.2.1" />
 
