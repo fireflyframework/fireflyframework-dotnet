@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Callbacks.Models</RootNamespace>
+    <PackageId>FireflyFramework.Callbacks.Models</PackageId>
+    <Description>Callback persistence entities. Mirrors fireflyframework-callbacks-models.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Callbacks.Interfaces/FireflyFramework.Callbacks.Interfaces.csproj" />
+    <ProjectReference Include="../FireflyFramework.Data/FireflyFramework.Data.csproj" />
+  </ItemGroup>
+</Project>

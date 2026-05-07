@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Callbacks.Core</RootNamespace>
+    <PackageId>FireflyFramework.Callbacks.Core</PackageId>
+    <Description>Callback dispatch with HMAC signing, retries, circuit breaker. Mirrors fireflyframework-callbacks-core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Callbacks.Models/FireflyFramework.Callbacks.Models.csproj" />
+    <ProjectReference Include="../FireflyFramework.Eda/FireflyFramework.Eda.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.Core" />
+  </ItemGroup>
+</Project>

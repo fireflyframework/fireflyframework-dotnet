@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Callbacks.Sdk</RootNamespace>
+    <PackageId>FireflyFramework.Callbacks.Sdk</PackageId>
+    <Description>HTTP SDK for the callback management API. Mirrors fireflyframework-callbacks-sdk.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Callbacks.Interfaces/FireflyFramework.Callbacks.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>

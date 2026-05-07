@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Callbacks.Web</RootNamespace>
+    <PackageId>FireflyFramework.Callbacks.Web</PackageId>
+    <Description>Callback management REST controllers. Mirrors fireflyframework-callbacks-web.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Callbacks.Core/FireflyFramework.Callbacks.Core.csproj" />
+    <ProjectReference Include="../FireflyFramework.Web/FireflyFramework.Web.csproj" />
+  </ItemGroup>
+</Project>
