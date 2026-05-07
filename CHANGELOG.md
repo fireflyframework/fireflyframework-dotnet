@@ -43,16 +43,20 @@ All notable changes to FireflyFramework.NET.
 - `Directory.Packages.props` — Central Package Management (Maven BoM analogue) pinning every NuGet
 - `Directory.Build.props` — Parent properties (`net9.0`, calendar version `26.04.01`)
 - xUnit test project with **157 passing tests** across every tier
-- Sample microservice (`samples/OrdersService`) — minimal-API + EF Core + EDA + EventSourcing
+- Sample microservice in the canonical five-project layout
+  (`samples/FireflyFramework.Samples.OrdersService.{Interfaces,Models,Core,Web,Sdk}`)
+  mirroring the multi-module Maven structure used by every Java service
+  in the Firefly platform
 - Apache-2.0 LICENSE, comprehensive `.gitattributes` and `.gitignore`
 
 #### Documentation
 - `docs/ARCHITECTURE.md` — tier-by-tier reference + dependency graph
+- `docs/SERVICE-SCAFFOLDING.md` — canonical five-project service layout
 - `docs/MIGRATION-GUIDE.md` — Java → .NET cookbook
 - `docs/CONFIGURATION.md` — every `Firefly:*` settings section
 - `docs/MODULES.md` — per-project description
 - `docs/AUDIT.md` — Java↔.NET feature parity audit (3 rounds)
-- Per-module README files (52)
+- Per-module README files (52 framework + 5 sample modules)
 
 ### Notes
 - Calendar version pinned to the Java release line (`26.04.01`).

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Samples.OrdersService.Core</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Description>Commands, queries, handlers, mappers, and business services. Mirrors core-banking-accounts-core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Samples.OrdersService.Models/FireflyFramework.Samples.OrdersService.Models.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Cqrs/FireflyFramework.Cqrs.csproj" />
+  </ItemGroup>
+</Project>

@@ -105,5 +105,8 @@
 
 ## 06 — Samples
 
-`samples/FireflyFramework.Samples.OrdersService/` — end-to-end showcase using
-the Application starter, EF Core, EDA, and event sourcing.
+`samples/FireflyFramework.Samples.OrdersService.*` — five-project reference
+service (`.Interfaces`, `.Models`, `.Core`, `.Web`, `.Sdk`) demonstrating
+the canonical scaffolding documented in
+[SERVICE-SCAFFOLDING.md](SERVICE-SCAFFOLDING.md). Mirrors the multi-module
+Maven layout used by every Java service in the Firefly platform.

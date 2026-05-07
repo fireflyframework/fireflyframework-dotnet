@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Samples.OrdersService.Sdk</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Description>Typed HttpClient SDK for the Orders sample. Mirrors core-banking-accounts-sdk.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Samples.OrdersService.Interfaces/FireflyFramework.Samples.OrdersService.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>
