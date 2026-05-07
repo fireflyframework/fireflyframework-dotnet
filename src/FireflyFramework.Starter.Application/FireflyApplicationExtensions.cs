@@ -12,10 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using FireflyFramework.Actuator.DependencyInjection;
+using FireflyFramework.Aop.DependencyInjection;
+using FireflyFramework.I18n.DependencyInjection;
 using FireflyFramework.Plugins.Api;
 using FireflyFramework.Plugins.Core;
+using FireflyFramework.Resilience.DependencyInjection;
+using FireflyFramework.Scheduling.DependencyInjection;
+using FireflyFramework.Security.DependencyInjection;
+using FireflyFramework.Session.DependencyInjection;
 using FireflyFramework.Starter.Core;
 using FireflyFramework.Web.Logging;
+using FireflyFramework.WebSocket.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,7 +32,8 @@ namespace FireflyFramework.Starter.Application;
 
 /// <summary>
 /// Application-tier starter: includes everything in the core starter plus the plugin
-/// extension registry and manager. IDP / orchestration / rule-engine wiring remains
+/// extension registry, security, actuator, scheduling, session, i18n, AOP, and the
+/// WebSocket session registry. IDP / orchestration / rule-engine wiring remains
 /// application-specific because each service picks one adapter — register them in your
 /// composition root.
 /// </summary>
@@ -41,6 +50,16 @@ public static class FireflyApplicationExtensions
         services.AddFireflyCore(config, serviceName, serviceVersion, cqrsAssemblies);
         services.TryAddSingleton<IExtensionRegistry, DefaultExtensionRegistry>();
         services.TryAddSingleton<IPluginManager, DefaultPluginManager>();
+
+        services.AddFireflyResilience(config);
+        services.AddFireflySecurity(config);
+        services.AddFireflyActuator(config);
+        services.AddFireflyScheduling();
+        services.AddFireflySession(config);
+        services.AddFireflyI18n(config);
+        services.AddFireflyAop();
+        services.AddFireflyWebSockets();
+
         return services;
     }
 }

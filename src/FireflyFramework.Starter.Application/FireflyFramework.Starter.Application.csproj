@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>FireflyFramework.Starter.Application</RootNamespace>
     <PackageId>FireflyFramework.Starter.Application</PackageId>
-    <Description>Meta-package for the business orchestration tier (core + orchestration + IDP). Mirrors fireflyframework-starter-application.</Description>
+    <Description>Meta-package for the business orchestration tier (core + orchestration + IDP + security + actuator + scheduling + session + i18n + AOP + websocket). Mirrors fireflyframework-starter-application.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +10,14 @@
     <ProjectReference Include="../FireflyFramework.Orchestration/FireflyFramework.Orchestration.csproj" />
     <ProjectReference Include="../FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
     <ProjectReference Include="../FireflyFramework.Plugins.Core/FireflyFramework.Plugins.Core.csproj" />
+    <ProjectReference Include="../FireflyFramework.Resilience/FireflyFramework.Resilience.csproj" />
+    <ProjectReference Include="../FireflyFramework.Security/FireflyFramework.Security.csproj" />
+    <ProjectReference Include="../FireflyFramework.Actuator/FireflyFramework.Actuator.csproj" />
+    <ProjectReference Include="../FireflyFramework.Scheduling/FireflyFramework.Scheduling.csproj" />
+    <ProjectReference Include="../FireflyFramework.Session/FireflyFramework.Session.csproj" />
+    <ProjectReference Include="../FireflyFramework.I18n/FireflyFramework.I18n.csproj" />
+    <ProjectReference Include="../FireflyFramework.Aop/FireflyFramework.Aop.csproj" />
+    <ProjectReference Include="../FireflyFramework.WebSocket/FireflyFramework.WebSocket.csproj" />
   </ItemGroup>
 
   <ItemGroup>
