@@ -1,153 +1,181 @@
-# Firefly Framework — .NET 10
-
-A complete .NET 10 port of the Java/Spring Boot Firefly Framework
-(`org.fireflyframework:*:26.04.01`). Same contracts, same starter pattern,
-same calendar version — re-implemented with idiomatic .NET tooling on the
-LTS .NET 10 runtime (C# 14).
-
-The repository ships **52 NuGet-publishable projects** organised into four
-tiers (foundational, platform, adapters, starters), backed by **157 xUnit
-tests** covering every public surface. There are no stub implementations —
-every method either runs real code or throws `NotSupportedException` with
-an actionable message documenting why the underlying provider does not
-support the operation.
-
-## Why this exists
-
-Most teams running the Java Firefly Framework eventually need to build
-auxiliary services in .NET — a Windows-only integration, an Azure Function,
-a desktop sidecar, a SaaS connector that uses a vendor's .NET SDK. Without
-this port, those services either re-invent the framework's conventions
-(error envelope, idempotency, correlation propagation, CQRS, EDA, event
-sourcing, callbacks, webhooks, IDP, ECM) or ship inconsistent contracts
-that break end-to-end traceability. With it, a .NET service is wired the
-same way as its Java siblings and produces the same wire format.
-
-## Requirements
-
-- .NET 10 SDK (`10.0.100` or later). Verified against `10.0.107`.
-- Apache-2.0 licence.
-
-```bash
-brew install dotnet            # macOS — or any official .NET 10 installer
-source .envrc                  # exports DOTNET_ROOT and prepends dotnet to PATH
-dotnet --version               # expect 10.0.x
+```
+  _____.__                _____.__
+_/ ____\__|______   _____/ ____\  | ___.__.
+\   __\|  \_  __ \_/ __ \   __\|  |<   |  |
+ |  |  |  ||  | \/\  ___/|  |  |  |_\___  |
+ |__|  |__||__|    \___  >__|  |____/ ____|
+                       \/           \/
 ```
 
-## Build, test, run
+# Firefly Framework for .NET
 
-```bash
-dotnet build  FireflyFramework.sln                                 # 0 errors
-dotnet test   tests/FireflyFramework.Tests/                        # 157 passing
-dotnet run --project samples/FireflyFramework.Samples.OrdersService.Web/
+**A production-grade platform for building reactive, event-driven, resilient microservices on .NET 10.**
+
+The Firefly Framework provides the cross-cutting machinery that every
+non-trivial business service needs — error envelopes, idempotency,
+correlation propagation, CQRS, event-driven messaging, event sourcing,
+sagas, configuration servers, identity adapters, document management,
+notifications, callbacks, webhooks — behind a single, opinionated
+composition pattern.
+
+This repository is the official .NET port of the Java/Spring Boot
+[`org.fireflyframework`](https://fireflyframework.org) platform. It
+preserves every public contract, configuration key, and wire format from
+the Java release line, re-implemented with idiomatic .NET 10 tooling
+(C# 14, ASP.NET Core 10, EF Core 10, OpenTelemetry, Polly v8). A service
+running version *X* on either platform consumes the same contracts and
+emits the same wire format.
+
+---
+
+## Why this framework
+
+Modern back-office systems aren't bottlenecked by writing the next
+controller. They're bottlenecked by getting **the same** controller,
+**the same** error response, **the same** correlation id, **the same**
+saga compensation, **the same** observability story across every service
+in the platform. Every team that re-invents these picks slightly
+different conventions and the platform fragments.
+
+Firefly Framework treats those concerns as solved problems. A service
+written on top is:
+
+- **Composed, not constructed.** A single `AddFireflyCore` /
+  `AddFireflyApplication` / `AddFireflyDomain` / `AddFireflyData` call
+  wires the whole infrastructure tier. Authors write commands, queries,
+  handlers, and endpoints — nothing more.
+- **Symmetric across runtimes.** The wire contract, the
+  `application/problem+json` shape, the idempotency-key semantics, the
+  saga step definitions, the event envelopes — all identical to the
+  Java side.
+- **Pluggable at the adapter layer.** Each integration point (IDP, ECM,
+  storage, e-signature, notification channel, message broker) is a port
+  with multiple adapter implementations selected at registration time.
+- **Observable by default.** OpenTelemetry traces and metrics, Serilog
+  structured logging, RFC 7807 error envelopes, and a startup banner
+  that names the application, version, and runtime are all on out of
+  the box.
+- **Honest about boundaries.** Every public method either runs real
+  code or throws `NotSupportedException` with an actionable message
+  documenting why the underlying provider does not support the
+  operation. There are no silent stubs.
+
+---
+
+## Architecture at a glance
+
+The framework is organised into four strictly-layered tiers, with a
+left-to-right dependency direction:
+
+```
+┌────────────────┐   ┌──────────────────┐   ┌───────────────┐   ┌──────────────────┐
+│  FOUNDATIONAL  │ → │     PLATFORM     │ → │   ADAPTERS    │ → │     STARTERS     │
+│                │   │                  │   │               │   │                  │
+│  Kernel        │   │  Cache           │   │  Client       │   │  Starter.Core    │
+│  Utils         │   │  Observability   │   │  Idp.*        │   │  Starter.App.    │
+│  Validators    │   │  Data            │   │  Ecm.*        │   │  Starter.Domain  │
+│  Web           │   │  Cqrs            │   │  Notifications│   │  Starter.Data    │
+│                │   │  Eda             │   │  Callbacks.*  │   │  BackOffice      │
+│                │   │  EventSourcing   │   │  Webhooks.*   │   │                  │
+│                │   │  Orchestration   │   │  ConfigServer │   │                  │
+│                │   │  RuleEngine.*    │   │               │   │                  │
+│                │   │  Plugins.*       │   │               │   │                  │
+└────────────────┘   └──────────────────┘   └───────────────┘   └──────────────────┘
 ```
 
-## Repository layout
+Each tier may depend on the tiers to its left, never to its right.
+The compiler enforces the layering — there is no project reference
+that violates it.
 
-```
-fireflyframework-dotnet/
-├── docs/                              Long-form documentation
-│   ├── ARCHITECTURE.md                Tier diagram, dependency graph
-│   ├── SERVICE-SCAFFOLDING.md         Canonical 5-project service layout
-│   ├── MIGRATION-GUIDE.md             Java to .NET cookbook
-│   ├── CONFIGURATION.md               Every Firefly:* options section
-│   ├── MODULES.md                     One-line description per project
-│   └── AUDIT.md                       Java vs .NET feature parity audit
-├── src/                               52 framework projects
-├── tests/FireflyFramework.Tests/      xUnit suite (157 tests)
-├── samples/                           Reference services in canonical 5-project layout
-│   ├── FireflyFramework.Samples.OrdersService.Interfaces/    DTOs / enums
-│   ├── FireflyFramework.Samples.OrdersService.Models/        Entities + repository
-│   ├── FireflyFramework.Samples.OrdersService.Core/          Commands / queries / handlers
-│   ├── FireflyFramework.Samples.OrdersService.Web/           Runnable host
-│   └── FireflyFramework.Samples.OrdersService.Sdk/           Typed HttpClient
-├── Directory.Build.props              Parent build properties
-├── Directory.Build.targets            Test-project package wiring
-├── Directory.Packages.props           Central Package Management
-├── FireflyFramework.sln               Solution file (57 projects, 7 folders)
-├── NuGet.config                       Pins nuget.org as the only source
-├── global.json                        Pins .NET SDK 10.0
-├── .envrc                             Sources dotnet (10.x) into PATH
-└── LICENSE                            Apache-2.0
-```
+### Foundational tier — primitives every service uses
 
-## Module catalogue
-
-### Foundational tier
-
-| Project                          | Purpose                                                                                |
+| Project                          | What it provides                                                                       |
 |----------------------------------|----------------------------------------------------------------------------------------|
-| `FireflyFramework.Kernel`        | RFC 7807 `ProblemDetail`, `OperationResult<T>`, `IClock`, `FireflyException` base type |
-| `FireflyFramework.Utils`         | `Try.Of`, `RetryUtils`, `TemplateRenderUtil` (Scriban + iText 7 PDF), `PdfOptions`     |
-| `FireflyFramework.Validators`    | 16 validators (IBAN, BIC, Luhn, VAT, phone, password strength, etc.)                   |
-| `FireflyFramework.Web`           | RFC 7807 middleware, idempotency, correlation, PII masking, 27 typed exceptions        |
+| `FireflyFramework.Kernel`        | RFC 7807 `ProblemDetail`, `OperationResult<T>`, `IClock`, `FireflyException` hierarchy |
+| `FireflyFramework.Utils`         | `Try.Of`, `RetryUtils`, `TemplateRenderUtil` (Scriban + iText 7 PDF), AES-256 helpers  |
+| `FireflyFramework.Validators`    | IBAN, BIC, Luhn, VAT, phone (E.164), e-mail, password strength, sort code, IDs (16)    |
+| `FireflyFramework.Web`           | RFC 7807 middleware, idempotency, correlation IDs, PII masking, typed exception family |
 
-### Platform tier
+### Platform tier — the infrastructure layer
 
-| Project                                                       | Purpose                                                                |
-|---------------------------------------------------------------|------------------------------------------------------------------------|
-| `FireflyFramework.Cache`                                      | `ICacheAdapter` port, Memory/Redis/Noop adapters, primary/fallback     |
-| `FireflyFramework.Observability`                              | OpenTelemetry .NET (traces/metrics/logs) + Serilog                     |
-| `FireflyFramework.Data`                                       | EF Core 10, filter DSL, pagination, soft-delete contract                |
-| `FireflyFramework.Cqrs`                                       | Command/query buses, fluent dispatch, query cache, event-driven invalidation |
-| `FireflyFramework.Eda`                                        | Kafka + RabbitMQ + InMemory, Schema Registry, filters, error handlers, resilient publisher |
-| `FireflyFramework.EventSourcing`                              | Aggregates, snapshots, outbox, projections, upcasters                  |
-| `FireflyFramework.Orchestration`                              | Saga, Workflow, TCC engines, dead-letter, compensation policies        |
-| `FireflyFramework.RuleEngine.{Interfaces,Models,Core,Web,Sdk}` | YAML DSL parser, AST evaluator, REST controllers                      |
-| `FireflyFramework.Plugins.{Api,Core}`                         | Lifecycle SPI, McMaster hot-reload assembly loader                     |
+| Project                                                       | What it provides                                                                |
+|---------------------------------------------------------------|---------------------------------------------------------------------------------|
+| `FireflyFramework.Cache`                                      | `ICacheAdapter` port with Memory, Redis, and NoOp adapters; primary + fallback  |
+| `FireflyFramework.Observability`                              | OpenTelemetry traces, metrics, logs; Serilog enrichers; health-check primitives |
+| `FireflyFramework.Data`                                       | EF Core 10 with InMemory / Postgres / SQL Server providers, generic filter DSL  |
+| `FireflyFramework.Cqrs`                                       | Command + query buses, fluent dispatch, validation, query caching, invalidation |
+| `FireflyFramework.Eda`                                        | Kafka + RabbitMQ + InMemory; Schema Registry; resilient publisher; filter family |
+| `FireflyFramework.EventSourcing`                              | `AggregateRoot`, snapshots, transactional outbox, projection runner, upcasting  |
+| `FireflyFramework.Orchestration`                              | Saga (DAG + compensation), Workflow, TCC engines; dead-letter; compensation policy |
+| `FireflyFramework.RuleEngine.{Interfaces,Models,Core,Web,Sdk}` | YAML DSL, AST + visitor evaluator, REST admin, typed SDK                       |
+| `FireflyFramework.Plugins.{Api,Core}`                         | Lifecycle SPI, McMaster-based hot-reload assembly loader                        |
 
-### Adapter tier
+### Adapter tier — pluggable integrations
 
-| Project                                                         | Purpose                                                       |
-|-----------------------------------------------------------------|---------------------------------------------------------------|
-| `FireflyFramework.Client`                                       | REST / SOAP / WebSocket / gRPC builders with Polly resilience |
-| `FireflyFramework.Idp`                                          | `IIdpAdapter` contract                                        |
-| `FireflyFramework.Idp.Keycloak`                                 | Token endpoint + admin REST API                               |
-| `FireflyFramework.Idp.AzureAd`                                  | MSAL + Microsoft Graph                                        |
-| `FireflyFramework.Idp.AwsCognito`                               | AWSSDK.CognitoIdentityProvider with full admin surface        |
-| `FireflyFramework.Idp.InternalDb`                               | BCrypt + JWT, revocation store, role catalog                  |
-| `FireflyFramework.Ecm`                                          | Adapter framework, 14 ports, NoOp + Local adapters            |
-| `FireflyFramework.Ecm.Storage.{Aws,Azure}`                      | S3 + Azure Blob document content adapters                     |
-| `FireflyFramework.Ecm.ESignature.{DocuSign,AdobeSign,Logalty}`  | Three e-signature provider adapters                           |
-| `FireflyFramework.Notifications{,.Core}`                        | Email / SMS / Push contracts + dispatcher with preferences    |
-| `FireflyFramework.Notifications.{SendGrid,Twilio,Resend,Firebase}` | Channel adapters                                           |
-| `FireflyFramework.Callbacks.{Interfaces,Models,Core,Sdk,Web}`   | Outbound callback subsystem                                   |
-| `FireflyFramework.Webhooks.{Interfaces,Core,Processor,Sdk,Web}` | Inbound webhook subsystem (Stripe / GitHub / Twilio sigs)     |
-| `FireflyFramework.ConfigServer`                                 | Spring-Cloud-Config-compatible REST endpoints                 |
+| Project                                                            | What it provides                                                  |
+|--------------------------------------------------------------------|-------------------------------------------------------------------|
+| `FireflyFramework.Client`                                          | REST / SOAP / WebSocket / gRPC builders with Polly v8 resilience  |
+| `FireflyFramework.Idp.{Keycloak,AzureAd,AwsCognito,InternalDb}`    | Token, admin, and user-management surfaces per provider           |
+| `FireflyFramework.Ecm`                                             | Adapter framework with 38 feature flags; document/folder/version/search/signature ports |
+| `FireflyFramework.Ecm.Storage.{Aws,Azure}`                         | S3 + Azure Blob document content adapters                         |
+| `FireflyFramework.Ecm.ESignature.{DocuSign,AdobeSign,Logalty}`     | E-signature provider adapters (JWT grant / OAuth2)                |
+| `FireflyFramework.Notifications{,.Core,.SendGrid,.Twilio,.Resend,.Firebase}` | Dispatcher with per-user channel preferences + four channel adapters |
+| `FireflyFramework.Callbacks.{Interfaces,Models,Core,Sdk,Web}`      | Outbound callback subsystem (HMAC + Polly retry, audit log)       |
+| `FireflyFramework.Webhooks.{Interfaces,Core,Processor,Sdk,Web}`    | Inbound webhook subsystem (Stripe / GitHub / Twilio / generic HMAC) |
+| `FireflyFramework.ConfigServer`                                    | Spring-Cloud-Config-compatible REST endpoints                     |
 
-### Starter tier
+### Starter tier — one-call composition
 
-| Project                                | Composes                                                       |
-|----------------------------------------|----------------------------------------------------------------|
-| `FireflyFramework.Starter.Core`        | Web + Cache + Observability + EDA + CQRS                       |
-| `FireflyFramework.Starter.Application` | Core + Plugins (IDP / orchestration registered per service)    |
-| `FireflyFramework.Starter.Domain`      | Core + EventSourcing (in-memory store by default)              |
-| `FireflyFramework.Starter.Data`        | Core (consumer supplies its own `DbContext`)                   |
-| `FireflyFramework.BackOffice`          | Application + back-office context resolver and middleware      |
+| Starter                                | Composition                                                          |
+|----------------------------------------|----------------------------------------------------------------------|
+| `FireflyFramework.Starter.Core`        | Web + Cache + Observability + EDA + CQRS                             |
+| `FireflyFramework.Starter.Application` | Core + Plugins (IDP / orchestration / rule-engine registered per service) |
+| `FireflyFramework.Starter.Domain`      | Core + Event Sourcing (in-memory event store by default)             |
+| `FireflyFramework.Starter.Data`        | Core (consumer supplies its own `DbContext`)                         |
+| `FireflyFramework.BackOffice`          | Application + back-office context resolver and middleware            |
 
-## A complete service end-to-end
+Each starter ships an embedded `banner.txt` printed at startup, naming
+the active starter, the application name and version, and the resolved
+.NET runtime — mirroring the Spring Boot banner-on-start behaviour.
 
-Every Firefly service follows the same five-project scaffolding (mirroring
-the multi-module Maven layout used by Java services in the platform):
+---
 
-| Project        | Responsibility                                                         |
-|----------------|------------------------------------------------------------------------|
-| `.Interfaces`  | Public DTOs and enums — the wire contract                              |
-| `.Models`      | Persistence entities + repository contracts                            |
-| `.Core`        | Commands, queries, handlers, mappers, business services                |
-| `.Web`         | Runnable ASP.NET Core 10 host                                           |
-| `.Sdk`         | Typed `HttpClient` for in-process callers                              |
+## Service shape — the canonical five-project layout
 
-See [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) for the
-template, naming conventions, dependency graph, and rationale. The
-runnable reference is at `samples/FireflyFramework.Samples.OrdersService.*`;
-its `.Web/Program.cs` is:
+Every microservice built on Firefly follows the same scaffolding,
+mirroring the multi-module Maven layout used by Java services across
+the Firefly platform:
+
+```
+your-service/
+├── YourCompany.Domain.YourService.Interfaces/   # public DTOs, enums, V1-namespaced wire contract
+├── YourCompany.Domain.YourService.Models/       # persistence entities + repository contracts
+├── YourCompany.Domain.YourService.Core/         # commands, queries, handlers, mappers
+├── YourCompany.Domain.YourService.Web/          # runnable ASP.NET Core 10 host
+└── YourCompany.Domain.YourService.Sdk/          # typed HttpClient consuming only Interfaces
+```
+
+The dependency graph is strictly layered:
+
+```
+Interfaces ◄── Models ◄── Core ◄── Web
+   ▲
+   └────── Sdk
+```
+
+`Sdk` references **only** `Interfaces`, so cross-service callers pull in
+your wire contract and nothing else — no persistence types, no business
+logic. The compiler enforces the layering.
+
+A complete reference implementation lives at
+[`samples/FireflyFramework.Samples.OrdersService.*`](samples/). The
+pattern, naming conventions, and rationale are documented in
+[`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md).
+
+### A `Program.cs` for a Firefly service
 
 ```csharp
 using FireflyFramework.Cqrs.Buses;
-using FireflyFramework.Samples.OrdersService.Core.Services.Orders.V1;
-using FireflyFramework.Samples.OrdersService.Interfaces.Dtos.V1;
-using FireflyFramework.Samples.OrdersService.Models.Repositories;
 using FireflyFramework.Starter.Core;
 using FireflyFramework.Web.DependencyInjection;
 using ExecutionContext = FireflyFramework.Cqrs.Context.ExecutionContext;
@@ -163,7 +191,7 @@ builder.Services.AddFireflyCore(
 builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
 
 var app = builder.Build();
-app.UseFireflyWeb();   // adds GlobalExceptionHandlerMiddleware + IdempotencyMiddleware
+app.UseFireflyWeb();   // RFC 7807 problem-details + idempotency + correlation
 
 app.MapPost("/api/v1/orders", async (PlaceOrderRequest req, ICommandBus bus, CancellationToken ct) =>
 {
@@ -175,18 +203,21 @@ app.MapPost("/api/v1/orders", async (PlaceOrderRequest req, ICommandBus bus, Can
 await app.RunAsync();
 ```
 
-`AddFireflyCore` wires Web + Cache + Observability + EDA + CQRS in one
-call. `UseFireflyWeb` registers `GlobalExceptionHandlerMiddleware` (every
-unhandled exception becomes RFC 7807 `application/problem+json`) and
-`IdempotencyMiddleware` (any request carrying an `Idempotency-Key` header
+`AddFireflyCore` registers Web, Cache, Observability, EDA, and CQRS in a
+single call. `UseFireflyWeb` installs the global exception handler (every
+unhandled exception becomes RFC 7807 `application/problem+json`) and the
+idempotency middleware (any request carrying an `Idempotency-Key` header
 returns the cached response on retry).
+
+---
 
 ## Configuration
 
-Every option binds under the `Firefly:*` namespace in `appsettings.json`
-(or the matching environment variables — `Firefly__Web__Idempotency__Enabled`
-and so on). The full schema, with example values for every section, lives
-in [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
+Every option binds under the `Firefly:*` namespace in `appsettings.json`,
+with the standard ASP.NET Core override precedence (environment variables
+like `Firefly__Web__Idempotency__Enabled`, command-line, user secrets).
+The full schema, with example values for every section, is documented in
+[`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
 
 ```json
 {
@@ -199,50 +230,104 @@ in [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
 }
 ```
 
+---
+
+## Getting started
+
+### Prerequisites
+
+- **.NET 10 SDK** (`10.0.100` or later)
+- **Apache 2.0** licence terms
+
+```bash
+brew install dotnet            # macOS — or any official .NET 10 installer
+source .envrc                  # exports DOTNET_ROOT and prepends dotnet to PATH
+dotnet --version               # expect 10.0.x
+```
+
+### Build and run
+
+```bash
+dotnet build  FireflyFramework.sln
+dotnet run --project samples/FireflyFramework.Samples.OrdersService.Web
+```
+
+The Orders sample exposes:
+
+- `POST /api/v1/orders` — place an order (honours `X-Idempotency-Key`)
+- `GET  /api/v1/orders/{id}` — read an order (cached query)
+- `/openapi/v1.json` — OpenAPI document
+- `/metrics` — Prometheus exposition (when the Prometheus exporter is
+  enabled)
+
+---
+
+## Repository layout
+
+```
+fireflyframework-dotnet/
+├── docs/                              Long-form documentation
+│   ├── ARCHITECTURE.md                Tier diagram, dependency graph, process model
+│   ├── SERVICE-SCAFFOLDING.md         Canonical 5-project service layout
+│   ├── MIGRATION-GUIDE.md             Java to .NET cookbook
+│   ├── CONFIGURATION.md               Every Firefly:* options section
+│   ├── MODULES.md                     Per-project description with Java mapping
+│   └── AUDIT.md                       Java vs .NET feature parity audit
+├── src/                               Framework projects (foundational → starters)
+├── samples/                           Reference services in canonical 5-project layout
+│   ├── FireflyFramework.Samples.OrdersService.Interfaces/
+│   ├── FireflyFramework.Samples.OrdersService.Models/
+│   ├── FireflyFramework.Samples.OrdersService.Core/
+│   ├── FireflyFramework.Samples.OrdersService.Web/
+│   └── FireflyFramework.Samples.OrdersService.Sdk/
+├── tests/FireflyFramework.Tests/      Cross-tier test suite
+├── Directory.Build.props              Parent build properties (net10.0, version, metadata)
+├── Directory.Build.targets            Cross-project test wiring
+├── Directory.Packages.props           Central Package Management — every NuGet pinned
+├── FireflyFramework.sln               Solution file
+├── NuGet.config                       Pins nuget.org as the only source
+├── global.json                        Pins .NET SDK 10.0
+├── .envrc                             Sources dotnet (10.x) into PATH
+└── LICENSE                            Apache-2.0
+```
+
+Each project under `src/` ships its own `README.md` describing its
+public surface, options class, and usage examples.
+
+---
+
 ## Documentation
 
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Tier-by-tier reference,
-  dependency-direction graph, process model, versioning policy.
-- [`docs/MIGRATION-GUIDE.md`](docs/MIGRATION-GUIDE.md) — Java to .NET
-  cookbook covering Reactor types, Spring DI, configuration, web layer,
-  persistence, CQRS, EDA, resilience, observability, validation, testing.
-- [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) — Every `Firefly:*`
-  configuration section with example values.
-- [`docs/MODULES.md`](docs/MODULES.md) — One-line description of every
-  project plus its Java original.
-- [`docs/AUDIT.md`](docs/AUDIT.md) — Java vs .NET feature parity audit
-  (three rounds of systematic review, including stub elimination, ECM
-  adapter framework completion, EDA filter family, CQRS fluent builders,
-  orchestration dead-letter and compensation policies).
+| Document | Purpose |
+|---|---|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Tier-by-tier reference, dependency-direction graph, process model, versioning policy |
+| [`docs/SERVICE-SCAFFOLDING.md`](docs/SERVICE-SCAFFOLDING.md) | The canonical 5-project layout, naming conventions, dependency graph, bootstrap recipe |
+| [`docs/MIGRATION-GUIDE.md`](docs/MIGRATION-GUIDE.md) | Java → .NET cookbook covering Reactor, Spring DI, web layer, persistence, CQRS, EDA, resilience, observability |
+| [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) | Every `Firefly:*` configuration section with example values |
+| [`docs/MODULES.md`](docs/MODULES.md) | One-line description of every project plus its Java original |
+| [`docs/AUDIT.md`](docs/AUDIT.md) | Java vs .NET feature parity audit |
 
-Each project under `src/` has its own `README.md` describing its public
-surface, options class, and usage examples.
+---
 
 ## Versioning
 
-The .NET line uses the same calendar version as the Java line
-(`26.04.01` = April 1st, 2026). When the Java side ships a new release,
+The .NET line uses the same calendar version as the Java line (`26.04.01`
+= year 26, month 04, patch 01). When the Java side ships a new release,
 `Directory.Build.props`'s `<Version>` is bumped in lockstep so a service
-running version *X* on either platform consumes the same contract.
+running version *X* on either platform consumes identical contracts.
 
 `Directory.Packages.props` pins every NuGet to a known-good version.
-When a transitive dependency forces a newer version (for example,
-Steeltoe forcing `System.Text.Json 9.0.8`), the pinned version is bumped
-rather than allowing a floating range.
+Transitive package floats are not allowed — when an upstream forces a
+newer version, the central pin is bumped explicitly.
 
-## Continuous integration
-
-`.github/workflows/ci.yml` runs `dotnet restore` → `dotnet build -c Release`
-→ `dotnet test` (with TRX logger and artefact upload) on every push and
-pull request to `main`, plus a `dotnet pack` job that publishes `.nupkg`
-artefacts on `main` only.
+---
 
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for build prerequisites, the
-"adding a project" recipe, and the .NET conventions the codebase follows
-(file-scoped namespaces, naming, sub-module pattern, idiomatic async
-shapes).
+"adding a project" recipe, and the .NET conventions the codebase
+follows (file-scoped namespaces, naming, sub-module pattern, idiomatic
+async shapes).
 
 ## License
 
