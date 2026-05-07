@@ -109,6 +109,21 @@ that violates it.
 | `FireflyFramework.Orchestration`                              | Saga (DAG + compensation), Workflow, TCC engines; dead-letter; compensation policy |
 | `FireflyFramework.RuleEngine.{Interfaces,Models,Core,Web,Sdk}` | YAML DSL, AST + visitor evaluator, REST admin, typed SDK                       |
 | `FireflyFramework.Plugins.{Api,Core}`                         | Lifecycle SPI, McMaster-based hot-reload assembly loader                        |
+| `FireflyFramework.Resilience`                                 | Resilience4j-style attributes + Polly v8 named pipelines (CB / retry / RL / bulkhead / timeout) |
+| `FireflyFramework.Security`                                   | Spring Security port: `SecurityContext`, `[PreAuthorize]`, JWT, BCrypt          |
+| `FireflyFramework.Aop`                                        | `[Aspect]` + before/after/around advice + AspectJ-style pointcuts               |
+| `FireflyFramework.Scheduling`                                 | `[Scheduled]` cron / fixed-rate / fixed-delay; Cronos parser                    |
+| `FireflyFramework.Messaging`                                  | Lightweight `IMessageBroker` for in-process pub/sub                             |
+| `FireflyFramework.Actuator`                                   | Spring Actuator endpoints: `/info`, `/env`, `/beans`, `/metrics`, `/loggers`, `/threaddump`, `/mappings` |
+| `FireflyFramework.Admin`                                      | Spring Boot Admin Server-style instance registry + heartbeat client             |
+| `FireflyFramework.I18n`                                       | `IMessageSource` + `ILocaleResolver`, JSON resource bundles, parent-culture fallback |
+| `FireflyFramework.Session`                                    | `IFireflySession` distributed session abstraction (in-memory + Redis)           |
+| `FireflyFramework.WebSocket`                                  | Server-side `[WebSocketMapping]`, lifecycle hooks, group broadcast              |
+| `FireflyFramework.Shell`                                      | `[ShellComponent/Method]`, `CommandLineRunner`, interactive shell               |
+| `FireflyFramework.Testing`                                    | `FireflyTestBase`, `EventCapturePublisher`, slice attributes                    |
+| `FireflyFramework.Cli`                                        | `firefly` dotnet tool: scaffold services, handlers, sagas, migrations           |
+| `FireflyFramework.Agentic`                                    | LLM agent loop, tools, memory; provider-agnostic chat / embedding ports         |
+| `FireflyFramework.AgenticBridge`                              | REST/SSE client for Python-hosted agents                                        |
 
 ### Adapter tier — pluggable integrations
 
@@ -119,20 +134,20 @@ that violates it.
 | `FireflyFramework.Ecm`                                             | Adapter framework with 38 feature flags; document/folder/version/search/signature ports |
 | `FireflyFramework.Ecm.Storage.{Aws,Azure}`                         | S3 + Azure Blob document content adapters                         |
 | `FireflyFramework.Ecm.ESignature.{DocuSign,AdobeSign,Logalty}`     | E-signature provider adapters (JWT grant / OAuth2)                |
-| `FireflyFramework.Notifications{,.Core,.SendGrid,.Twilio,.Resend,.Firebase}` | Dispatcher with per-user channel preferences + four channel adapters |
+| `FireflyFramework.Notifications{,.Core,.SendGrid,.Twilio,.Resend,.Firebase,.Smtp}` | Dispatcher with per-user channel preferences + five channel adapters (incl. plain SMTP) |
 | `FireflyFramework.Callbacks.{Interfaces,Models,Core,Sdk,Web}`      | Outbound callback subsystem (HMAC + Polly retry, audit log)       |
 | `FireflyFramework.Webhooks.{Interfaces,Core,Processor,Sdk,Web}`    | Inbound webhook subsystem (Stripe / GitHub / Twilio / generic HMAC) |
 | `FireflyFramework.ConfigServer`                                    | Spring-Cloud-Config-compatible REST endpoints                     |
 
 ### Starter tier — one-call composition
 
-| Starter                                | Composition                                                          |
-|----------------------------------------|----------------------------------------------------------------------|
-| `FireflyFramework.Starter.Core`        | Web + Cache + Observability + EDA + CQRS                             |
-| `FireflyFramework.Starter.Application` | Core + Plugins (IDP / orchestration / rule-engine registered per service) |
-| `FireflyFramework.Starter.Domain`      | Core + Event Sourcing (in-memory event store by default)             |
-| `FireflyFramework.Starter.Data`        | Core (consumer supplies its own `DbContext`)                         |
-| `FireflyFramework.BackOffice`          | Application + back-office context resolver and middleware            |
+| Starter                                | Composition                                                                                |
+|----------------------------------------|--------------------------------------------------------------------------------------------|
+| `FireflyFramework.Starter.Core`        | Web + Cache + Observability + EDA + CQRS + Resilience + Messaging                          |
+| `FireflyFramework.Starter.Application` | Core + Plugins + Resilience + Security + Actuator + Scheduling + Session + I18n + Aop + WebSocket |
+| `FireflyFramework.Starter.Domain`      | Core + Event Sourcing + Aop                                                                |
+| `FireflyFramework.Starter.Data`        | Core (consumer supplies its own `DbContext`)                                               |
+| `FireflyFramework.BackOffice`          | Application + back-office context resolver and middleware                                  |
 
 Each starter ships an embedded `banner.txt` printed at startup, naming
 the active starter, the application name and version, and the resolved

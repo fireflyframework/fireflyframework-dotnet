@@ -2,6 +2,48 @@
 
 All notable changes to FireflyFramework.NET.
 
+## [Unreleased]
+
+### Added — Spring parity expansion (16 new modules)
+
+The .NET port now matches the breadth of pyfly and Spring/Java by adding the
+following standalone modules. Each one mirrors a long-standing Spring concept
+that the previous .NET surface either inlined or omitted.
+
+#### Cross-cutting platform additions
+- **Resilience** — `IResilienceRegistry`, declarative attributes (`[CircuitBreaker]`, `[Retry]`, `[RateLimiter]`, `[Bulkhead]`, `[TimeLimiter]`, `[Fallback]`), Polly v8 factory backed by named pipelines from configuration
+- **Security** — `SecurityContext`, `ISecurityContextHolder`, `[PreAuthorize]`/`[PostAuthorize]`/`[Secured]`, SpEL-style `IAuthorizationEvaluator` (`hasRole`, `hasAuthority`, compound `and`/`or`/`!`, `#variable` substitution), JWT bearer wiring, BCrypt + Noop password encoders, `SecurityContextMiddleware`
+- **Aop** — `[Aspect]`, `[Before]`/`[After]`/`[Around]`/`[AfterReturning]`/`[AfterThrowing]`, AspectJ-subset pointcut DSL (`execution`, `within`, `@annotation`), reflection-based `AspectRegistry`, `AdviceInvoker.Run`
+- **Scheduling** — `[Scheduled(Cron|FixedRate|FixedDelay, Zone, InitialDelay)]`, Cronos-backed `CronosTaskScheduler`, hosted service that auto-arms decorated singletons, `IScheduledTaskHost` marker for DI discovery
+- **Messaging** — `Message<T>` envelope, `IMessageBroker`, in-process pub/sub adapter, `[MessageListener]` and `[SendTo]` attributes — a lightweight alternative to the EDA stack for in-host messaging
+
+#### Spring infrastructure ports
+- **Actuator** — `/actuator/{info,env,beans,metrics,loggers,threaddump,mappings}` endpoints with secret masking, registration snapshot for the `beans` endpoint, custom-endpoint extension via `IActuatorEndpoint`
+- **Admin** — Spring Boot Admin Server-style instance registry (`POST /admin/instances`, `PUT .../heartbeat`, `DELETE`, `GET`); client `BackgroundService` that auto-registers + heartbeats
+- **I18n** — `IMessageSource` with parent-culture fallback, `ResourceBundleMessageSource` loading JSON files, locale resolvers (`Fixed`, `AcceptHeader`, `Cookie`)
+- **Session** — `IFireflySession` + `ISessionStore` with in-memory and Redis adapters, `FireflySessionMiddleware`, distributed session sharing
+- **WebSocket** — `[WebSocketMapping]`, `IWebSocketHandler` lifecycle, `IWebSocketSessionRegistry` with named groups + broadcast, ASP.NET Core endpoint binder
+
+#### Tools and supporting
+- **Shell** — `[ShellComponent/Method/Argument/Option]`, `IShellRunner` (one-shot + interactive), `ICommandLineRunner` / `IApplicationRunner` (Spring Boot equivalents), `ApplicationArguments` token parser
+- **Testing** — `FireflyTestBase` host harness with `MockBean<T>`, `FireflyTestClient`, `EventCapturePublisher` (replaces `IEventPublisher`), `[DataTest]`/`[ServiceTest]`/`[WebTest]` slice attributes, `AssertEventPublished`/`AssertEventCount` helpers
+- **Cli** — `firefly` dotnet tool: `firefly new <name> --tier=core|domain|experience`, `firefly handler command|query <Name>`, `firefly saga <Name> --steps=N`, `firefly migration <name>`
+- **Agentic** — `IChatModel` / `IEmbeddingModel` ports, `IAgentTool` (+ `AgentTool<TArgs, TResult>`), `WindowedMemory`, `Agent` loop with multi-turn tool dispatch
+- **AgenticBridge** — `IAgenticClient` REST/SSE transport for Python-hosted agents (`fireflyframework-agentic-bridge` parity)
+
+#### Notification provider
+- **Notifications.Smtp** — Plain SMTP relay (System.Net.Mail) for environments that can't use SaaS providers — fills the gap pyfly had over the original .NET port
+
+### Changed
+
+- `FireflyFramework.Starter.Application` now bundles Resilience + Security + Actuator + Scheduling + Session + I18n + Aop + WebSocket
+- `FireflyFramework.Starter.Core` now bundles Resilience + Messaging
+- `FireflyFramework.Starter.Domain` now bundles Aop
+
+### Tests
+
+- 44 new tests across the new modules (390 total, all green); covers retry/timeout pipelines, JWT round-trip, SpEL expression compounds, around-advice argument flow, cron + fixed-rate scheduling, in-memory broker delivery, env-endpoint secret masking, instance-registry heartbeats, locale fallback, in-memory session round-trip, WebSocket group broadcast, shell argument parser, event-capture assertions, scripted agent loop, REST agentic bridge, SMTP failure path
+
 ## [26.04.01] — 2026-05-07
 
 ### Added — initial .NET 10 port from `org.fireflyframework:*:26.04.01`

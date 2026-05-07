@@ -55,6 +55,21 @@
     <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.AdobeSign/FireflyFramework.Ecm.ESignature.AdobeSign.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.DocuSign/FireflyFramework.Ecm.ESignature.DocuSign.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Ecm.ESignature.Logalty/FireflyFramework.Ecm.ESignature.Logalty.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Resilience/FireflyFramework.Resilience.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Security/FireflyFramework.Security.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Aop/FireflyFramework.Aop.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Scheduling/FireflyFramework.Scheduling.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Messaging/FireflyFramework.Messaging.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Actuator/FireflyFramework.Actuator.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Admin/FireflyFramework.Admin.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.I18n/FireflyFramework.I18n.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Session/FireflyFramework.Session.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.WebSocket/FireflyFramework.WebSocket.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Shell/FireflyFramework.Shell.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Testing/FireflyFramework.Testing.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Agentic/FireflyFramework.Agentic.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.AgenticBridge/FireflyFramework.AgenticBridge.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.Smtp/FireflyFramework.Notifications.Smtp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

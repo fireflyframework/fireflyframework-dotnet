@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="../FireflyFramework.Starter.Core/FireflyFramework.Starter.Core.csproj" />
     <ProjectReference Include="../FireflyFramework.EventSourcing/FireflyFramework.EventSourcing.csproj" />
+    <ProjectReference Include="../FireflyFramework.Aop/FireflyFramework.Aop.csproj" />
   </ItemGroup>
 
   <ItemGroup>

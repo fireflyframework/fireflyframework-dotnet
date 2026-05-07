@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Aop</RootNamespace>
+    <PackageId>FireflyFramework.Aop</PackageId>
+    <Description>Aspect-Oriented Programming: [Aspect], [Before], [After], [Around], [AfterReturning], [AfterThrowing], JoinPoint, AdviceBinding, AspectRegistry. Mirrors Spring AOP and pyfly/aop. Uses System.Reflection.DispatchProxy for runtime weaving.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>

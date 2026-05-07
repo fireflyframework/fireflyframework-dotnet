@@ -13,6 +13,8 @@
     <ProjectReference Include="../FireflyFramework.Cqrs/FireflyFramework.Cqrs.csproj" />
     <ProjectReference Include="../FireflyFramework.Client/FireflyFramework.Client.csproj" />
     <ProjectReference Include="../FireflyFramework.Validators/FireflyFramework.Validators.csproj" />
+    <ProjectReference Include="../FireflyFramework.Resilience/FireflyFramework.Resilience.csproj" />
+    <ProjectReference Include="../FireflyFramework.Messaging/FireflyFramework.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

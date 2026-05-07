@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>FireflyFramework.Cli</RootNamespace>
+    <PackageId>FireflyFramework.Cli</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>firefly</ToolCommandName>
+    <Description>Firefly framework CLI for scaffolding services, generating handlers/sagas/migrations. Port of fireflyframework-cli (Go) and pyfly/cli.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../FireflyFramework.Shell/FireflyFramework.Shell.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" />
+    <PackageReference Include="Scriban" />
+  </ItemGroup>
+</Project>
