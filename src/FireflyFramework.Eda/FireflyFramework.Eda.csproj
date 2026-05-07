@@ -20,7 +20,6 @@
     <PackageReference Include="Confluent.SchemaRegistry.Serdes.Avro" />
     <PackageReference Include="Confluent.SchemaRegistry.Serdes.Protobuf" />
     <PackageReference Include="RabbitMQ.Client" />
-    <PackageReference Include="System.Text.Json" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Polly.Core" />
     <PackageReference Include="Apache.Avro" />

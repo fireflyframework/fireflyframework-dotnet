@@ -5,7 +5,4 @@
     <Description>Webhook public DTOs. Mirrors fireflyframework-webhooks-interfaces.</Description>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" />
-  </ItemGroup>
 </Project>
