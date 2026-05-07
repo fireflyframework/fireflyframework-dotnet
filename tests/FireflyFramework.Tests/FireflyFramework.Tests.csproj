@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Tests</RootNamespace>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Utils/FireflyFramework.Utils.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Validators/FireflyFramework.Validators.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Web/FireflyFramework.Web.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Cache/FireflyFramework.Cache.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Observability/FireflyFramework.Observability.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Data/FireflyFramework.Data.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Cqrs/FireflyFramework.Cqrs.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Eda/FireflyFramework.Eda.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.EventSourcing/FireflyFramework.EventSourcing.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Orchestration/FireflyFramework.Orchestration.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.RuleEngine.Core/FireflyFramework.RuleEngine.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Plugins.Core/FireflyFramework.Plugins.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.Core/FireflyFramework.Notifications.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Idp.InternalDb/FireflyFramework.Idp.InternalDb.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Client/FireflyFramework.Client.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Webhooks.Interfaces/FireflyFramework.Webhooks.Interfaces.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Webhooks.Core/FireflyFramework.Webhooks.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Webhooks.Processor/FireflyFramework.Webhooks.Processor.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.BackOffice/FireflyFramework.BackOffice.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications/FireflyFramework.Notifications.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Notifications.Core/FireflyFramework.Notifications.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.ConfigServer/FireflyFramework.ConfigServer.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Callbacks.Interfaces/FireflyFramework.Callbacks.Interfaces.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Callbacks.Core/FireflyFramework.Callbacks.Core.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Callbacks.Models/FireflyFramework.Callbacks.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
+  </ItemGroup>
+</Project>
