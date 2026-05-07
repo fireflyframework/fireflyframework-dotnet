@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Ecm</RootNamespace>
+    <PackageId>FireflyFramework.Ecm</PackageId>
+    <Description>Enterprise Content Management hexagonal ports: Document, Folder, Storage, Versioning, Search, Permission, E-Signature. Mirrors fireflyframework-ecm.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+</Project>

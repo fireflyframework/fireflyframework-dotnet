@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Ecm.ESignature.DocuSign</RootNamespace>
+    <PackageId>FireflyFramework.Ecm.ESignature.DocuSign</PackageId>
+    <Description>DocuSign ECM e-signature adapter (REST + JWT grant). Mirrors fireflyframework-ecm-esignature-docusign.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="DocuSign.eSign.dll" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>

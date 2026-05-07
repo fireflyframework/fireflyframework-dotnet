@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Ecm.Storage.Azure</RootNamespace>
+    <PackageId>FireflyFramework.Ecm.Storage.Azure</PackageId>
+    <Description>Azure Blob Storage ECM adapter. Mirrors fireflyframework-ecm-storage-azure.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Azure.Identity" />
+  </ItemGroup>
+</Project>

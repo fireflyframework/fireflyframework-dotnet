@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Ecm.Storage.Aws</RootNamespace>
+    <PackageId>FireflyFramework.Ecm.Storage.Aws</PackageId>
+    <Description>Amazon S3 ECM storage adapter implementing IDocumentContentPort. Mirrors fireflyframework-ecm-storage-aws.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="AWSSDK.S3" />
+  </ItemGroup>
+</Project>

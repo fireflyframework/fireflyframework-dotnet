@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Ecm.ESignature.Logalty</RootNamespace>
+    <PackageId>FireflyFramework.Ecm.ESignature.Logalty</PackageId>
+    <Description>Logalty (EU qualified e-signature) ECM adapter. Mirrors fireflyframework-ecm-esignature-logalty.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Ecm/FireflyFramework.Ecm.csproj" />
+    <ProjectReference Include="../FireflyFramework.Client/FireflyFramework.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="System.Net.Http.Json" />
+  </ItemGroup>
+</Project>
