@@ -67,5 +67,16 @@ public sealed class InMemoryPersistenceProvider : IExecutionPersistenceProvider
         return Task.FromResult(removed.Count);
     }
 
+    public async IAsyncEnumerable<OrchestrationExecutionContext> FindStaleAsync(DateTimeOffset threshold, [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
+    {
+        await Task.Yield();
+        foreach (var s in _store.Values.Where(s =>
+                     s.Status is ExecutionStatus.Running or ExecutionStatus.Waiting or ExecutionStatus.Suspended &&
+                     s.StartedAt < threshold))
+        {
+            yield return s;
+        }
+    }
+
     public Task<bool> IsHealthyAsync(CancellationToken ct = default) => Task.FromResult(true);
 }
