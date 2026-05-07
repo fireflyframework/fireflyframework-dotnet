@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Plugins.Core</RootNamespace>
+    <PackageId>FireflyFramework.Plugins.Core</PackageId>
+    <Description>Default Plugin API implementations: DefaultPluginManager, DefaultExtensionRegistry, dependency resolver, hot-reload via McMaster.NETCore.Plugins. Mirrors fireflyframework-plugins:plugin-core.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Plugins.Api/FireflyFramework.Plugins.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="McMaster.NETCore.Plugins" />
+  </ItemGroup>
+</Project>

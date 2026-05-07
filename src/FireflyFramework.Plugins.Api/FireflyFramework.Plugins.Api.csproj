@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Plugins.Api</RootNamespace>
+    <PackageId>FireflyFramework.Plugins.Api</PackageId>
+    <Description>Plugin SPI: Plugin / PluginManager / ExtensionRegistry / PluginMetadata / PluginDescriptor. Mirrors fireflyframework-plugins:plugin-api.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Kernel/FireflyFramework.Kernel.csproj" />
+  </ItemGroup>
+</Project>
