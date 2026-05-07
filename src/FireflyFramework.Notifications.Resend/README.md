@@ -39,7 +39,9 @@ builder.Services.AddHttpClient<IEmailProvider, ResendEmailProvider>();
 | Reference                            | Used for                       |
 |--------------------------------------|--------------------------------|
 | `FireflyFramework.Notifications`     | `IEmailProvider`               |
-| `System.Net.Http.Json`               | REST calls                     |
+
+`System.Net.Http.Json` (used for the REST call to Resend) ships in the
+.NET 10 framework — no package import needed.
 
 ## Java mapping
 

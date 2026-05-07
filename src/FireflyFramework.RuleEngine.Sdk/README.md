@@ -1,10 +1,23 @@
 # FireflyFramework.RuleEngine.Sdk
 
-Typed `HttpClient` wrapper that calls the rule-engine REST API exposed
-by `FireflyFramework.RuleEngine.Web`. Use it from any .NET service that
-needs to evaluate a centrally-managed rule remotely.
+Typed `HttpClient` for the rule-engine REST API exposed by
+`FireflyFramework.RuleEngine.Web`. Use it from any .NET service that
+needs to evaluate a centrally-managed rule remotely without pulling in
+the evaluator engine.
 
 Mirrors `org.fireflyframework:firefly-common-rule-engine-sdk`.
+
+## Wiring
+
+```csharp
+using FireflyFramework.RuleEngine.Sdk;
+
+builder.Services.AddRuleEngineClient(new Uri("https://rules.svc.local"));
+```
+
+`AddRuleEngineClient` registers `IRuleEngineClient` against a typed
+`HttpClient` — the same shape as the canonical service Sdk in
+[`samples/FireflyFramework.Samples.OrdersService.Sdk`](../../samples/FireflyFramework.Samples.OrdersService.Sdk).
 
 ## Usage
 
@@ -12,35 +25,43 @@ Mirrors `org.fireflyframework:firefly-common-rule-engine-sdk`.
 using FireflyFramework.RuleEngine.Interfaces;
 using FireflyFramework.RuleEngine.Sdk;
 
-builder.Services
-    .AddHttpClient<RuleEngineClient>(c => c.BaseAddress = new Uri("https://rules.svc.local"));
-
-// Inject and call:
-var response = await ruleEngineClient.EvaluateByCodeAsync(
-    new RuleEvaluationByCodeRequestDto(
-        Code:  "vip-discount",
-        Input: new Dictionary<string, object?> { ["amount"] = 1500m, ["isVip"] = true }),
-    ct);
+public sealed class CheckoutPricing(IRuleEngineClient rules)
+{
+    public Task<RulesEvaluationResponseDto?> ApplyVipDiscount(decimal amount, bool isVip, CancellationToken ct) =>
+        rules.EvaluateByCodeAsync(
+            new RuleEvaluationByCodeRequestDto(
+                RuleCode:  "vip-discount",
+                InputData: new Dictionary<string, object?> { ["amount"] = amount, ["isVip"] = isVip }),
+            ct);
+}
 ```
 
 ## Public surface
 
-| Method                  | Calls                                                  |
-|-------------------------|--------------------------------------------------------|
-| `EvaluateAsync`         | `POST /api/rules/evaluate/direct`                      |
-| `EvaluateByCodeAsync`   | `POST /api/rules/evaluate/by-code`                     |
+| Member                                                                  | Calls                                                |
+|-------------------------------------------------------------------------|------------------------------------------------------|
+| `IRuleEngineClient.EvaluateAsync(RulesEvaluationRequestDto)`            | `POST /api/rules/evaluate/direct` (base-64 YAML)    |
+| `IRuleEngineClient.EvaluatePlainAsync(PlainYamlEvaluationRequestDto)`   | `POST /api/rules/evaluate/plain` (plain-text YAML)  |
+| `IRuleEngineClient.EvaluateByCodeAsync(RuleEvaluationByCodeRequestDto)` | `POST /api/rules/evaluate/by-code`                  |
+| `AddRuleEngineClient(IServiceCollection, Uri)`                          | Registers `IRuleEngineClient` + `RuleEngineClient`   |
 
-Both return `RulesEvaluationResponseDto?`.
+All three methods return `RulesEvaluationResponseDto?`. Non-success
+responses throw `HttpRequestException` via `EnsureSuccessStatusCode`.
 
 ## Dependencies
 
-| Reference                                | Used for                       |
-|------------------------------------------|--------------------------------|
-| `FireflyFramework.RuleEngine.Interfaces` | DTOs                           |
-| `System.Net.Http.Json`                   | Typed JSON HTTP                |
+| Reference                                | Used for                            |
+|------------------------------------------|-------------------------------------|
+| `FireflyFramework.RuleEngine.Interfaces` | DTO shapes                          |
+| `Microsoft.Extensions.Http`              | `AddHttpClient<TClient, TImpl>`     |
+
+`System.Net.Http.Json` ships in the .NET 10 framework — no package
+import needed.
 
 ## Java mapping
 
-| .NET                | Java                              |
-|---------------------|-----------------------------------|
-| `RuleEngineClient`  | `RuleEngineClient`                |
+| .NET                    | Java                                |
+|-------------------------|-------------------------------------|
+| `IRuleEngineClient`     | `RuleEngineClient` (interface)      |
+| `RuleEngineClient`      | `RuleEngineClient`                  |
+| `AddRuleEngineClient`   | Spring Cloud OpenFeign auto-config  |

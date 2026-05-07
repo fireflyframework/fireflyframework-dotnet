@@ -146,8 +146,7 @@ A `BusinessException` thrown from the application is converted to:
 | Reference                                  | Used for                                  |
 |--------------------------------------------|-------------------------------------------|
 | `FireflyFramework.Kernel`                  | Base `FireflyException`                   |
-| `Microsoft.AspNetCore.App` (FrameworkRef)  | Middleware, `HttpContext`                 |
-| `System.Text.Json`                         | Problem-details serialisation             |
+| `Microsoft.AspNetCore.App` (FrameworkRef)  | Middleware, `HttpContext`, `System.Text.Json` (problem-details serialisation) |
 
 ## Java mapping
 

@@ -51,7 +51,9 @@ builder.Services.AddHttpClient<AdobeSignSignatureEnvelopeAdapter>();
 | Reference                | Used for                              |
 |--------------------------|---------------------------------------|
 | `FireflyFramework.Ecm`   | `ISignatureEnvelopePort`, `[EcmAdapter]` |
-| `System.Net.Http.Json`   | REST calls                            |
+
+`System.Net.Http.Json` (used for REST calls) ships in the .NET 10
+framework — no package import needed.
 
 ## Java mapping
 

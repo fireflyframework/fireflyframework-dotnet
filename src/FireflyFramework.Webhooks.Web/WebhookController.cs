@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FireflyFramework.Webhooks.Web;
 
 [ApiController]
-[Route("webhooks/{provider}")]
+[Route("api/webhooks/{provider}")]
 public sealed class WebhookController : ControllerBase
 {
     private readonly IWebhookProcessingService _service;

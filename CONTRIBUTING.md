@@ -29,7 +29,7 @@ fireflyframework-dotnet/
 ├── .envrc                       # `source` it to expose Homebrew dotnet
 ├── docs/                        # AUDIT, ARCHITECTURE, SERVICE-SCAFFOLDING, etc.
 ├── src/                         # 52 framework projects, one per Java module / sub-module
-├── tests/                       # xUnit suites (157 tests passing)
+├── tests/                       # xUnit suite spanning every tier
 ├── samples/                     # five-project reference microservice
 └── .github/workflows/ci.yml     # GitHub Actions: build, test, pack
 ```

@@ -100,8 +100,12 @@
 
 ## 05 — Tests
 
-`tests/FireflyFramework.Tests/` is a single xUnit project covering every tier
-(currently 133 tests).
+`tests/FireflyFramework.Tests/` is a single xUnit project covering every
+public surface of the framework — kernel utilities, validators, web
+middleware, cache adapters, observability, EF Core repositories,
+CQRS, EDA, event sourcing, orchestration engines, rule engine, plugins,
+notifications, IDP, ECM, callbacks, webhooks, the config server, the
+back-office context, and the startup banner.
 
 ## 06 — Samples
 

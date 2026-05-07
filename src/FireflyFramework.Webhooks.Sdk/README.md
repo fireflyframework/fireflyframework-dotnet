@@ -1,36 +1,60 @@
 # FireflyFramework.Webhooks.Sdk
 
-Typed `HttpClient` wrapper for posting webhook events to the ingestion
-endpoint exposed by `FireflyFramework.Webhooks.Web`.
+Typed `HttpClient` for the webhook-ingestion endpoint exposed by
+`FireflyFramework.Webhooks.Web`. Use it from any .NET service that
+needs to forward an inbound webhook event to the framework's ingestion
+pipeline.
 
 Mirrors `org.fireflyframework:firefly-webhooks-sdk`.
 
-## Usage
+## Wiring
 
 ```csharp
 using FireflyFramework.Webhooks.Sdk;
 
-builder.Services
-    .AddHttpClient<WebhookClient>(c => c.BaseAddress = new Uri("https://webhooks.svc.local"));
+builder.Services.AddWebhookClient(new Uri("https://webhooks.svc.local"));
+```
 
-var response = await client.SendAsync(provider: "stripe", evt, ct);
+`AddWebhookClient` registers `IWebhookClient` against a typed
+`HttpClient` — the same shape as the canonical service Sdk in
+[`samples/FireflyFramework.Samples.OrdersService.Sdk`](../../samples/FireflyFramework.Samples.OrdersService.Sdk).
+
+## Usage
+
+```csharp
+public sealed class StripeWebhookForwarder(IWebhookClient client)
+{
+    public Task<WebhookResponseDto?> Forward(object stripeEvent, CancellationToken ct) =>
+        client.SendAsync("stripe", stripeEvent, ct);
+}
 ```
 
 ## Public surface
 
-| Method                   | Calls                             |
-|--------------------------|-----------------------------------|
-| `SendAsync(provider, evt)` | `POST /api/webhooks/{provider}` |
+| Member                                        | Calls                                                |
+|-----------------------------------------------|------------------------------------------------------|
+| `IWebhookClient.SendAsync(provider, payload)` | `POST /api/webhooks/{provider}`                      |
+| `AddWebhookClient(IServiceCollection, Uri)`   | Registers `IWebhookClient` + `WebhookClient`         |
+
+`SendAsync` URL-encodes `provider`, posts `payload` as JSON, and returns
+the framework's `WebhookResponseDto` (`EventId`, `Status`, `Message?`,
+`ProcessingTimeMs`). Non-success responses throw `HttpRequestException`
+via `EnsureSuccessStatusCode`.
 
 ## Dependencies
 
-| Reference                                | Used for                       |
-|------------------------------------------|--------------------------------|
-| `FireflyFramework.Webhooks.Interfaces`   | DTOs                           |
-| `System.Net.Http.Json`                   | Typed JSON HTTP                |
+| Reference                                | Used for                            |
+|------------------------------------------|-------------------------------------|
+| `FireflyFramework.Webhooks.Interfaces`   | DTO shapes                          |
+| `Microsoft.Extensions.Http`              | `AddHttpClient<TClient, TImpl>`     |
+
+`System.Net.Http.Json` ships in the .NET 10 framework — no package
+import needed.
 
 ## Java mapping
 
-| .NET             | Java                              |
-|------------------|-----------------------------------|
-| `WebhookClient`  | `WebhookClient`                   |
+| .NET                  | Java                              |
+|-----------------------|-----------------------------------|
+| `IWebhookClient`      | `WebhookClient` (interface)       |
+| `WebhookClient`       | `WebhookClient`                   |
+| `AddWebhookClient`    | Spring Cloud OpenFeign auto-config |
