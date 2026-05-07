@@ -12,5 +12,13 @@ public interface IExecutionPersistenceProvider
     IAsyncEnumerable<OrchestrationExecutionContext> FindByStatusAsync(ExecutionStatus status, CancellationToken ct = default);
     IAsyncEnumerable<OrchestrationExecutionContext> FindInFlightAsync(CancellationToken ct = default);
     Task<int> CleanupAsync(TimeSpan olderThan, CancellationToken ct = default);
+
+    /// <summary>
+    /// Streams executions that are still "in-flight" (Running / Waiting / Suspended) and were
+    /// last seen before <paramref name="threshold"/> — used by <c>RecoveryService</c> to find
+    /// orphaned executions whose owning host has crashed or restarted.
+    /// </summary>
+    IAsyncEnumerable<OrchestrationExecutionContext> FindStaleAsync(DateTimeOffset threshold, CancellationToken ct = default);
+
     Task<bool> IsHealthyAsync(CancellationToken ct = default);
 }
