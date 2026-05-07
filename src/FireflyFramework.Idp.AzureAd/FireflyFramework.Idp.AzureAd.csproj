@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Idp.AzureAd</RootNamespace>
+    <PackageId>FireflyFramework.Idp.AzureAd</PackageId>
+    <Description>Azure AD / Entra ID adapter via MSAL + Microsoft.Graph. Mirrors fireflyframework-idp-azure-ad.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Identity.Client" />
+    <PackageReference Include="Microsoft.Graph" />
+    <PackageReference Include="Azure.Identity" />
+  </ItemGroup>
+</Project>

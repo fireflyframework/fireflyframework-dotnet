@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Idp.InternalDb</RootNamespace>
+    <PackageId>FireflyFramework.Idp.InternalDb</PackageId>
+    <Description>Self-contained DB-backed identity provider with BCrypt + JWT + TOTP. Mirrors fireflyframework-idp-internal-db.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
+    <ProjectReference Include="../FireflyFramework.Data/FireflyFramework.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="BCrypt.Net-Next" />
+  </ItemGroup>
+</Project>

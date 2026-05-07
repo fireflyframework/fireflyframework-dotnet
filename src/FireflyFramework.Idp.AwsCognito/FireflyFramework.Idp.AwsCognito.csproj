@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>FireflyFramework.Idp.AwsCognito</RootNamespace>
+    <PackageId>FireflyFramework.Idp.AwsCognito</PackageId>
+    <Description>AWS Cognito IDP adapter via AWSSDK.CognitoIdentityProvider. Mirrors fireflyframework-idp-aws-cognito.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FireflyFramework.Idp/FireflyFramework.Idp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="AWSSDK.CognitoIdentityProvider" />
+  </ItemGroup>
+</Project>
