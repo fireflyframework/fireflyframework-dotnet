@@ -28,7 +28,8 @@ public sealed class AspectRegistry : IAspectRegistry
             var aspectAttr = aspect.GetType().GetCustomAttribute<AspectAttribute>();
             if (aspectAttr is null) continue;
             var order = aspectAttr.Order;
-            foreach (var m in aspect.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            // Advice methods must be public so the registry can call them across module boundaries.
+            foreach (var m in aspect.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (m.GetCustomAttribute<BeforeAttribute>() is { } b) reg.Register(new ReflectiveAdviceBinding(AdviceKind.Before, b.Pointcut, order, aspect, m));
                 if (m.GetCustomAttribute<AfterAttribute>() is { } a) reg.Register(new ReflectiveAdviceBinding(AdviceKind.After, a.Pointcut, order, aspect, m));

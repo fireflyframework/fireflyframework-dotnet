@@ -70,6 +70,8 @@
     <ProjectReference Include="../../src/FireflyFramework.Agentic/FireflyFramework.Agentic.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.AgenticBridge/FireflyFramework.AgenticBridge.csproj" />
     <ProjectReference Include="../../src/FireflyFramework.Notifications.Smtp/FireflyFramework.Notifications.Smtp.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Cli/FireflyFramework.Cli.csproj" />
+    <ProjectReference Include="../../src/FireflyFramework.Starter.Application/FireflyFramework.Starter.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,5 +84,6 @@
     <PackageReference Include="FirebaseAdmin" />
     <PackageReference Include="AWSSDK.S3" />
     <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
   </ItemGroup>
 </Project>

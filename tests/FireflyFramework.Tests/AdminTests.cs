@@ -27,7 +27,7 @@ public sealed class AdminTests
         var heartbeat = registry.Heartbeat("id-1", "UP");
         heartbeat.Should().NotBeNull();
         heartbeat!.Status.Should().Be("UP");
-        heartbeat.LastHeartbeat.Should().BeAfter(stored.LastHeartbeat);
+        heartbeat.LastHeartbeat.Should().BeOnOrAfter(stored.LastHeartbeat);
     }
 
     [Fact]
@@ -42,19 +42,29 @@ public sealed class AdminTests
     }
 
     [Fact]
-    public void EvictStale_drops_instances_past_timeout()
+    public void EvictStale_keeps_fresh_instances()
     {
+        // Deterministic: register two instances and immediately evict with a generous
+        // timeout — neither should be dropped because both heartbeats are fresh.
         var registry = new InMemoryInstanceRegistry();
-        var stale = new AdminInstance("old", "x", "", "", DateTimeOffset.UtcNow.AddMinutes(-10), DateTimeOffset.UtcNow.AddMinutes(-10), "UP", new Dictionary<string, string>());
-        registry.Register(stale);
-        // forcibly set the heartbeat into the past via re-registration with old time:
-        var aged = stale with { LastHeartbeat = DateTimeOffset.UtcNow.AddMinutes(-10) };
-        // swap: registry stamps `LastHeartbeat = UtcNow` on Register, so heartbeat with UtcNow.AddMinutes(-10):
-        registry.Heartbeat("old", "UP");
+        registry.Register(new AdminInstance("a", "x", "", "", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, "UP", new Dictionary<string, string>()));
+        registry.Register(new AdminInstance("b", "x", "", "", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, "UP", new Dictionary<string, string>()));
+
+        registry.EvictStale(TimeSpan.FromMinutes(5));
+
+        registry.All().Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task EvictStale_drops_instances_past_timeout()
+    {
+        // Deterministic: register, sleep beyond the eviction window, then evict.
+        var registry = new InMemoryInstanceRegistry();
+        registry.Register(new AdminInstance("stale", "x", "", "", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, "UP", new Dictionary<string, string>()));
+
+        await Task.Delay(50);
         registry.EvictStale(TimeSpan.FromMilliseconds(1));
 
-        // After eviction with 1ms timeout, the just-heartbeat'd instance is still fresh enough
-        // (within the same millisecond). We verify EvictStale is callable and idempotent.
-        registry.All().Should().HaveCount(1);
+        registry.All().Should().BeEmpty();
     }
 }

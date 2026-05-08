@@ -1,10 +1,11 @@
 # FireflyFramework.Agentic
 
-LLM agent framework — .NET counterpart of `fireflyframework-agentic`
-(Python). Provider-agnostic ports for chat models, embeddings, tools,
-and memory; an `Agent` loop that drives multi-turn tool use.
+In-process LLM agent loop — .NET counterpart of the Python
+`fireflyframework-agentic` library. Exposes provider-agnostic ports for
+chat completion, embeddings, tools, and memory; ships an `Agent` class
+that drives multi-turn tool dispatch.
 
-## What it provides
+## What ships in this NuGet package
 
 | Concept | Type |
 |---|---|
@@ -12,33 +13,52 @@ and memory; an `Agent` loop that drives multi-turn tool use.
 | Embeddings | `IEmbeddingModel.EmbedAsync` |
 | Tools | `IAgentTool` / `AgentTool<TArgs, TResult>` |
 | Memory | `IAgentMemory` (built-in `WindowedMemory`) |
-| Agent loop | `Agent.AskAsync(userInput, ct)` (handles tool dispatch) |
+| Agent loop | `Agent.AskAsync(userInput, ct)` (handles tool dispatch + memory) |
+| Messages | `ChatMessage`, `ChatResponse`, `ToolCall`, `ToolResult`, `MessageRole` |
 
-## Pluggable providers
+## What this package does *not* ship
 
-Adapters live in sibling NuGet packages:
+The core deliberately ships **no** SDK reference for any LLM provider.
+Adapters that wrap OpenAI, Anthropic, Azure OpenAI, Bedrock, Ollama,
+etc. are the consumer's responsibility — the contract is small enough
+(`IChatModel.CompleteAsync` returning `ChatResponse`) that wrapping any
+SDK is a few dozen lines.
 
-* `FireflyFramework.Agentic.Adapters.OpenAi`
-* `FireflyFramework.Agentic.Adapters.Anthropic`
-* `FireflyFramework.Agentic.Adapters.AzureOpenAi`
-* `FireflyFramework.Agentic.Adapters.Bedrock`
-
-Each registers an `IChatModel` and an `IEmbeddingModel` you can pick by
-configuration. The core module deliberately ships **no** SDK reference,
-so apps that never call OpenAI directly (e.g. they only use the
-`AgenticBridge` to hit a Python-hosted agent) don't pay for it.
+This keeps applications that only need the bridge to a Python-hosted
+agent (`FireflyFramework.AgenticBridge`) from pulling in a model SDK
+they will never use.
 
 ## Quick start
 
 ```csharp
+// 1. Implement IChatModel for your provider of choice.
+public sealed class OpenAiChatModel(OpenAIClient client) : IChatModel
+{
+    public string ModelId => "gpt-4.1";
+
+    public async Task<ChatResponse> CompleteAsync(IReadOnlyList<ChatMessage> messages, ChatOptions? options = null, CancellationToken ct = default)
+    {
+        var resp = await client.CompleteChatAsync(/* map ... */, ct);
+        return new ChatResponse(resp.Content, ToToolCalls(resp), resp.FinishReason);
+    }
+
+    public IAsyncEnumerable<string> StreamAsync(IReadOnlyList<ChatMessage> messages, ChatOptions? options = null, CancellationToken ct = default) { /* ... */ }
+}
+
+// 2. Register tools and the model with DI.
 services.AddFireflyAgentic()
+        .AddSingleton<IChatModel, OpenAiChatModel>()
         .AddAgentTool<GetOrderTool>()
         .AddAgentTool<RefundOrderTool>();
 
-public sealed class OrdersAgentFactory(IChatModel model, IAgentMemory mem, IEnumerable<IAgentTool> tools)
-{
-    public Agent Build() => new(model, mem, tools, "You are an orders assistant. Use the tools to answer.", maxTurns: 6);
-}
-
+// 3. Drive an Agent.
+var agent = new Agent(model, memory, tools, "You are an orders assistant.", maxTurns: 6);
 var answer = await agent.AskAsync("Refund order 0x42, the customer is unhappy.", ct);
 ```
+
+## When to use this vs `FireflyFramework.AgenticBridge`
+
+| Need | Module |
+|---|---|
+| Single-model tool use, short conversations, in-process tools | **Agentic** |
+| Multi-agent topologies, RAG pipelines, vector DB hops, fine-tuned runtimes | **AgenticBridge** (delegate to Python) |

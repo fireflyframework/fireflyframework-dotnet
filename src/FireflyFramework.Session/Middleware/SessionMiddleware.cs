@@ -30,16 +30,22 @@ public sealed class FireflySessionMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         IFireflySession? session = null;
+        var hadCookie = false;
         if (context.Request.Cookies.TryGetValue(_options.CookieName, out var sid))
+        {
             session = await _store.LoadAsync(sid, context.RequestAborted).ConfigureAwait(false);
+            hadCookie = session is not null;
+        }
 
         session ??= await _store.CreateAsync(_options.MaxInactiveInterval, context.RequestAborted).ConfigureAwait(false);
         context.Items["firefly.session"] = session;
 
-        try { await _next(context).ConfigureAwait(false); }
-        finally
+        // Issue Set-Cookie *before* the inner pipeline writes the body — once headers
+        // have flushed it's too late. We only emit the cookie when one wasn't already
+        // present (i.e. on the first request) so we don't churn the same cookie on
+        // every subsequent hit.
+        if (!hadCookie)
         {
-            await _store.SaveAsync(session, CancellationToken.None).ConfigureAwait(false);
             context.Response.Cookies.Append(_options.CookieName, session.Id, new CookieOptions
             {
                 HttpOnly = true,
@@ -49,6 +55,15 @@ public sealed class FireflySessionMiddleware
                 MaxAge = _options.MaxInactiveInterval,
             });
         }
+
+        // Persist mutations after the response completes. Save errors must not break
+        // the response — log inside the store if you need traceability.
+        context.Response.OnCompleted(async () =>
+        {
+            await _store.SaveAsync(session, CancellationToken.None).ConfigureAwait(false);
+        });
+
+        await _next(context).ConfigureAwait(false);
     }
 }
 

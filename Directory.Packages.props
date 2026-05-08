@@ -232,6 +232,7 @@
     <PackageVersion Include="WireMock.Net" Version="1.6.7" />
     <PackageVersion Include="WireMock.Net.FluentAssertions" Version="1.6.7" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
 
     <!-- SBOM (CycloneDX equivalent) -->
     <PackageVersion Include="CycloneDX" Version="4.0.2" />
