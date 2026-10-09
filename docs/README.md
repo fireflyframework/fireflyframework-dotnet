@@ -1,8 +1,19 @@
-# Firefly Framework Documentation
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/brand/logo-dark.svg">
+    <img src="../assets/brand/logo-light.svg" alt="netfly — Firefly for .NET" width="280">
+  </picture>
+</p>
 
-Long-form documentation for the .NET port of the Firefly Framework.
+# netfly — Firefly for .NET
+
+Long-form documentation for netfly, the .NET member of the Firefly Framework.
 Each file targets a specific audience or task; this index is the
 recommended starting point.
+
+The product name is **netfly**. Package names, namespaces and APIs retain their
+existing `FireflyFramework.*` identifiers; installation commands and repository
+URLs remain unchanged.
 
 | Document | Audience | What it covers |
 |---|---|---|

@@ -1,22 +1,24 @@
-```
-  _____.__                _____.__
-_/ ____\__|______   _____/ ____\  | ___.__.
-\   __\|  \_  __ \_/ __ \   __\|  |<   |  |
- |  |  |  ||  | \/\  ___/|  |  |  |_\___  |
- |__|  |__||__|    \___  >__|  |____/ ____|
-                       \/           \/
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.svg">
+    <img src="assets/brand/banner-light.svg" alt="netfly — Firefly for .NET" width="100%">
+  </picture>
+</p>
 
-# Firefly Framework for .NET
+# netfly — Firefly for .NET
 
 **A production-grade platform for building reactive, event-driven, resilient microservices on .NET 10.**
 
-The Firefly Framework provides the cross-cutting machinery that every
+netfly provides the cross-cutting machinery that every
 non-trivial business service needs — error envelopes, idempotency,
 correlation propagation, CQRS, event-driven messaging, event sourcing,
 sagas, configuration servers, identity adapters, document management,
 notifications, callbacks, webhooks — behind a single, opinionated
 composition pattern.
+
+**netfly** is the product name. Package and namespace identifiers remain
+`FireflyFramework.*`; existing APIs, configuration keys and repository URLs
+are unchanged.
 
 This repository is the official .NET port of the Java/Spring Boot
 [`org.fireflyframework`](https://fireflyframework.org) platform. It
